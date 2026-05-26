@@ -50,7 +50,8 @@
     -webkit-font-smoothing: antialiased;
   }
   body {
-    padding-top: env(safe-area-inset-top);
+    /* 顶部至少留 18px，刘海机型用更大的 safe-area-inset-top */
+    padding-top: max(env(safe-area-inset-top), 18px);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     padding-bottom: calc(120px + env(safe-area-inset-bottom));
@@ -108,6 +109,7 @@
   header {
     text-align: center;
     margin-bottom: 18px;
+    padding-top: 12px;
     position: relative;
   }
   .header-doodle {
@@ -610,37 +612,6 @@
   }
   .modal-options .opt-frame:active { opacity: 0.7; }
 
-  /* ==================== 示例数据栏 ==================== */
-  .demo-bar {
-    margin: 22px auto 4px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 14px;
-    padding: 16px 4px;
-    border-top: 1px dashed var(--ink-faint);
-    opacity: 0.85;
-  }
-  .demo-link {
-    background: transparent;
-    border: 1.5px dashed var(--ink-faint);
-    border-radius: 8px 12px 10px 14px;
-    color: var(--ink-soft);
-    font-family: inherit;
-    font-size: 15px;
-    letter-spacing: 1px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .demo-link:hover {
-    color: var(--ink);
-    border-color: var(--ink);
-    background: var(--paper-2);
-  }
-  .demo-link:active { transform: scale(0.95); }
-  .demo-link-danger:hover { color: #B5443A; border-color: #B5443A; }
-
   /* ==================== 提示条 ==================== */
   .toast {
     position: fixed;
@@ -790,12 +761,6 @@
     </div>
   </section>
 
-  <!-- 示例数据控制 -->
-  <div class="demo-bar">
-    <button class="demo-link" id="demoReloadBtn">🔄 重新载入示例数据</button>
-    <button class="demo-link" id="demoNewDayBtn">📅 模拟新的一天</button>
-    <button class="demo-link demo-link-danger" id="demoClearBtn">🗑️ 清空全部</button>
-  </div>
 </div>
 
 <!-- 底部标签 -->
@@ -1240,10 +1205,6 @@ function clearAll() {
 
 document.addEventListener("DOMContentLoaded", () => {
   currentDate = todayStr();
-  // 首次访问 -> 自动加载示例（今日 + 历史都为空时）
-  if (Object.keys(loadAll()).length === 0 && Object.keys(loadHistory()).length === 0) {
-    seedFreshDemo();
-  }
   updateHeaderDate();
   renderToday();
 
@@ -1282,28 +1243,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll("nav.tabs button").forEach(b => {
     b.addEventListener("click", () => switchTab(b.dataset.tab));
-  });
-
-  // 示例数据按钮
-  document.getElementById("demoReloadBtn").addEventListener("click", () => {
-    if (confirm("将清除当前所有任务，重新载入示例数据。继续？")) {
-      clearAll();
-      seedFreshDemo();
-      location.reload();
-    }
-  });
-  document.getElementById("demoNewDayBtn").addEventListener("click", () => {
-    if (confirm("将模拟一个新的一天（弹出新一天选项框）。继续？")) {
-      clearAll();
-      seedNewDayDemo();
-      location.reload();
-    }
-  });
-  document.getElementById("demoClearBtn").addEventListener("click", () => {
-    if (confirm("将清空全部数据，回到完全空白状态。继续？")) {
-      clearAll();
-      location.reload();
-    }
   });
 
   // 跨午夜：日期变了刷新一下头部和今日视图
