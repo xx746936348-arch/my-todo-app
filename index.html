@@ -126,7 +126,7 @@
     font-weight: 400;
     letter-spacing: 4px;
     color: var(--ink);
-    font-family: "Liu Jian Mao Cao", "Long Cang", "ZCOOL KuaiLe", "Ma Shan Zheng", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", "KaiTi", cursive;
+    /* 字体跟随 body，与任务文字一致 */
     line-height: 1.1;
     transform: rotate(-1deg);
   }
@@ -445,7 +445,7 @@
     font-weight: 400;
     padding-bottom: 6px;
     border-bottom: 2px dashed var(--ink);
-    font-family: "Liu Jian Mao Cao", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
+    /* 字体跟随 body */
   }
   .history-day .stat {
     font-size: 16px;
@@ -613,6 +613,24 @@
     border-radius: 12px 16px 14px 10px / 14px 10px 16px 12px;
   }
   .modal-options .opt-frame:active { opacity: 0.7; }
+
+  /* ==================== 确认弹窗按钮 ==================== */
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .modal-actions .btn {
+    flex: 1;
+    padding: 12px 6px;
+    font-size: 18px;
+    text-align: center;
+    color: var(--ink);
+    letter-spacing: 1.5px;
+    transform: rotate(-0.3deg);
+  }
+  .modal-actions .btn:nth-child(2) { transform: rotate(0.3deg); }
+  .modal-actions .btn-confirm-ok { font-weight: 700; }
 
   /* ==================== 提示条 ==================== */
   .toast {
@@ -803,24 +821,14 @@
   </button>
 </nav>
 
-<!-- 新一天弹窗 -->
-<div class="modal-bg" id="newDayModal">
+<!-- 通用确认弹窗（App 风格） -->
+<div class="modal-bg" id="confirmModal">
   <div class="modal sk">
-    <h2>新的一天～</h2>
-    <p class="modal-sub"><span id="newDayDate">今天</span> · 怎么开始呢？</p>
-    <div class="modal-options">
-      <button class="opt-frame sk" data-choice="copyAll" data-num="①">
-        <span style="padding-left: 22px;">复制昨天的全部</span>
-        <span class="opt-sub" style="padding-left: 22px;">昨天的清单都搬过来</span>
-      </button>
-      <button class="opt-frame sk" data-choice="copyUnfinished" data-num="②">
-        <span style="padding-left: 22px;">只要没做完的</span>
-        <span class="opt-sub" style="padding-left: 22px;">接着昨天没做完的继续</span>
-      </button>
-      <button class="opt-frame sk" data-choice="blank" data-num="③">
-        <span style="padding-left: 22px;">从空白开始</span>
-        <span class="opt-sub" style="padding-left: 22px;">崭新的一页</span>
-      </button>
+    <h2 id="confirmTitle">确认</h2>
+    <p class="modal-sub" id="confirmMessage">是否继续？</p>
+    <div class="modal-actions">
+      <button class="btn sk" id="confirmCancelBtn">取消</button>
+      <button class="btn sk btn-confirm-ok" id="confirmOkBtn">确定</button>
     </div>
   </div>
 </div>
@@ -877,33 +885,44 @@ function saveTodayToHistory() {
   toast(existed ? "已更新到清单历史 ✓" : "已保存到清单历史 ✓");
 }
 
-function clearTodayTasks() {
+async function clearTodayTasks() {
   const today = todayStr();
   const tasks = getTasks(today);
   if (tasks.length === 0) { toast("今日已经是空的~"); return; }
-  if (!confirm(`确定要清空今日的 ${tasks.length} 件任务吗？\n（清空前记得先「保存到清单历史」哦~）`)) return;
+  const ok = await appConfirm(
+    `确定要清空今日的 ${tasks.length} 件任务吗？清空前记得先「存入清单历史」哦~`,
+    { title: "清空清单", okText: "清空", cancelText: "取消" }
+  );
+  if (!ok) return;
   setTasks(today, []);
   renderToday();
   toast("今日已清空 ✓");
 }
 
-function copyHistoryToToday(date) {
+async function copyHistoryToToday(date) {
   const today = todayStr();
   const current = getTasks(today);
   if (current.length > 0) {
-    if (!confirm(`今日已有 ${current.length} 件任务，要替换为「${prettyDate(date)}」的清单吗？`)) return;
+    const ok = await appConfirm(
+      `今日已有 ${current.length} 件任务，要替换为「${prettyDate(date)}」的清单吗？`,
+      { title: "替换今日", okText: "替换", cancelText: "取消" }
+    );
+    if (!ok) return;
   }
   const history = loadHistory();
   const source = history[date] || [];
-  // 全部重置为未完成、新生成 ID
   const newTasks = source.map(t => ({ id: uid(), text: t.text, done: false }));
   setTasks(today, newTasks);
   switchTab("today");
   toast("已复制到今日 ✓");
 }
 
-function deleteHistoryEntry(date) {
-  if (!confirm(`确定要从清单历史中删除「${prettyDate(date)}」吗？`)) return;
+async function deleteHistoryEntry(date) {
+  const ok = await appConfirm(
+    `确定要从清单历史中删除「${prettyDate(date)}」吗？`,
+    { title: "删除记录", okText: "删除", cancelText: "取消" }
+  );
+  if (!ok) return;
   const history = loadHistory();
   delete history[date];
   saveHistoryStore(history);
@@ -919,6 +938,45 @@ function toast(msg) {
   t.classList.add("show");
   clearTimeout(toast._tid);
   toast._tid = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+/* ---------- 自定义确认弹窗（替代浏览器原生 confirm()） ---------- */
+function appConfirm(message, opts) {
+  return new Promise(resolve => {
+    const modal     = document.getElementById("confirmModal");
+    const titleEl   = document.getElementById("confirmTitle");
+    const msgEl     = document.getElementById("confirmMessage");
+    const okBtn     = document.getElementById("confirmOkBtn");
+    const cancelBtn = document.getElementById("confirmCancelBtn");
+    const options = opts || {};
+
+    titleEl.textContent = options.title    || "确认";
+    msgEl.textContent   = message;
+    okBtn.textContent   = options.okText   || "确定";
+    cancelBtn.textContent = options.cancelText || "取消";
+
+    function cleanup(result) {
+      modal.classList.remove("active");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      modal.removeEventListener("click", onBg);
+      document.removeEventListener("keydown", onKey);
+      resolve(result);
+    }
+    function onOk()     { cleanup(true); }
+    function onCancel() { cleanup(false); }
+    function onBg(e)    { if (e.target === modal) cleanup(false); }
+    function onKey(e) {
+      if (e.key === "Escape") cleanup(false);
+      if (e.key === "Enter")  cleanup(true);
+    }
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    modal.addEventListener("click", onBg);
+    document.addEventListener("keydown", onKey);
+    modal.classList.add("active");
+  });
 }
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({

@@ -6,7 +6,7 @@
  * 升级时改 CACHE 名字（如 v2 / v3）即可让所有客户端拿到新版本。
  */
 
-const CACHE = "today-list-v6";
+const CACHE = "today-list-v7";
 
 // 与首页一同部署的核心文件
 const CORE_ASSETS = [
