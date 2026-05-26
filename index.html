@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#FDF8EE" />
+<title>今日清单</title>
+
+<!-- ====== PWA 标识 ====== -->
+<link rel="manifest" href="manifest.webmanifest">
+
+<!-- iOS 主屏：让它像 App 一样无浏览器外壳 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="今日清单">
+<meta name="format-detection" content="telephone=no">
+
+<!-- 图标 -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+<!-- 手写体（中文 + 英文） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Liu+Jian+Mao+Cao&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ==================== 调色 ==================== */
+  :root {
+    --paper:      #FDF8EE;
+    --paper-2:    #F6EFDE;
+    --paper-3:    #ECE3CC;
+    --ink:        #1A1A1A;
+    --ink-soft:   #5A5A5A;
+    --ink-faint:  #9A9A9A;
+  }
+
+  /* ==================== 基础 ==================== */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    color: var(--ink);
+    font-family: "Long Cang", "Liu Jian Mao Cao", "ZCOOL KuaiLe",
+                 "Ma Shan Zheng", "Caveat", "Comic Sans MS",
+                 "STKaiti", "Kaiti SC", cursive;
+    background: var(--paper);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+    position: relative;
+    background-image:
+      linear-gradient(rgba(154, 154, 154, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(154, 154, 154, 0.04) 1px, transparent 1px);
+    background-size: 22px 22px;
+    background-color: var(--paper);
+    background-attachment: fixed;
+  }
+
+  /* 纸张噪点 */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.36 0 0 0 0 0.3 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  /* ==================== 容器 ==================== */
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 22px 18px 12px;
+  }
+
+  /* ==================== 通用：手绘边框 ==================== */
+  /* 用 ::before 画一层有 filter 的"颤抖边框"，文字保持清晰 */
+  .sk {
+    position: relative;
+  }
+  .sk::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--ink);
+    border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px;
+    background: transparent;
+    filter: url(#wobble);
+    pointer-events: none;
+    z-index: -1;
+  }
+  /* 实心填充版（按钮/印章） */
+  .sk-solid::before {
+    background: var(--ink);
+  }
+
+  /* ==================== 顶栏 ==================== */
+  header {
+    text-align: center;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .header-doodle {
+    display: block;
+    margin: 0 auto 4px;
+    width: 90px; height: 80px;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    color: var(--ink);
+    font-family: "Liu Jian Mao Cao", "Long Cang", "ZCOOL KuaiLe", "Ma Shan Zheng", "STKaiti", cursive;
+    line-height: 1.1;
+    transform: rotate(-1deg);
+  }
+  header .en {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    font-family: "Caveat", cursive;
+    letter-spacing: 1.5px;
+    transform: rotate(0.5deg);
+  }
+  header .date {
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    letter-spacing: 1.5px;
+    font-family: "Long Cang", "Liu Jian Mao Cao", "STKaiti", cursive;
+  }
+  header .date-stripe {
+    display: inline-block;
+    padding: 2px 14px;
+    position: relative;
+    margin-top: 4px;
+  }
+
+  /* ==================== 屏幕切换 ==================== */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+
+  /* ==================== 卡片 ==================== */
+  .card {
+    padding: 18px 16px;
+    margin-bottom: 18px;
+    background: transparent;
+    transform: rotate(-0.3deg);
+  }
+  .card + .card { transform: rotate(0.3deg); }
+
+  /* ==================== 输入栏 ==================== */
+  .add-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .add-row .input-wrap {
+    flex: 1;
+    padding: 4px 12px;
+  }
+  .add-row input[type="text"] {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 10px 4px;
+    font-size: 20px;
+    outline: none;
+    color: var(--ink);
+    font-family: inherit;
+    letter-spacing: 1px;
+  }
+  .add-row input[type="text"]::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  /* ==================== 按钮 ==================== */
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.08s;
+    -webkit-user-select: none; user-select: none;
+    background: transparent;
+    color: var(--ink);
+    padding: 10px 18px;
+    font-size: 20px;
+    letter-spacing: 2px;
+    position: relative;
+  }
+  .btn:active { transform: scale(0.96); }
+
+  /* 实心填充按钮（背景黑色，字白色） */
+  .btn-fill {
+    color: var(--paper);
+    padding: 12px 22px;
+    font-size: 22px;
+    transform: rotate(-1deg);
+  }
+  .btn-primary.large {
+    width: 100%;
+    padding: 18px;
+    font-size: 28px;
+    letter-spacing: 6px;
+  }
+
+  /* ==================== 任务列表 ==================== */
+  .task-list { list-style: none; padding: 0; margin: 0; }
+  .task-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    margin-bottom: 8px;
+    gap: 10px;
+    transition: opacity 0.2s;
+  }
+  .task-item.done { opacity: 0.45; }
+  .task-item.done .task-text {
+    text-decoration: line-through;
+    text-decoration-color: var(--ink);
+    text-decoration-thickness: 2px;
+    color: var(--ink-soft);
+  }
+
+  /* 编号方框 */
+  .task-num {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--ink);
+    font-family: "Caveat", "Long Cang", cursive;
+    position: relative;
+    transform: rotate(-2deg);
+  }
+
+  /* 中间文本框 */
+  .task-text {
+    flex: 1;
+    font-size: 22px;
+    line-height: 1.4;
+    word-break: break-word;
+    padding: 10px 14px;
+    cursor: text;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    color: var(--ink);
+    letter-spacing: 1px;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .task-text[contenteditable="true"] {
+    outline: none;
+  }
+  .task-text[contenteditable="true"]::before {
+    border-width: 2.5px !important;
+    border-color: var(--ink) !important;
+    background: rgba(255, 255, 220, 0.5) !important;
+  }
+
+  /* 右侧完成圆圈 */
+  .task-check {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: transparent;
+    font-size: 24px;
+    transition: color 0.2s;
+    padding: 0; line-height: 1;
+    position: relative;
+    border: none;
+    font-family: "Long Cang", cursive;
+  }
+  .task-check::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--ink);
+    border-radius: 50% 48% 52% 50% / 50% 52% 48% 50%;
+    filter: url(#wobble);
+  }
+  .task-check:active { transform: scale(0.88); }
+  .task-item.done .task-check {
+    color: var(--ink);
+  }
+  .task-item.done .task-check::before {
+    background: var(--ink);
+  }
+  .task-item.done .task-check {
+    color: var(--paper);
+  }
+
+  /* 空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 30px 12px;
+    color: var(--ink-soft);
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+  .empty-state svg {
+    display: block;
+    margin: 0 auto 10px;
+  }
+
+  /* ==================== 今日操作按钮 ==================== */
+  .today-actions {
+    display: flex;
+    gap: 12px;
+    margin: 18px 0 8px;
+  }
+  .today-actions .btn {
+    flex: 1;
+    padding: 13px 8px;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-align: center;
+    color: var(--ink);
+    transform: rotate(-0.3deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .today-actions .btn:nth-child(2) { transform: rotate(0.3deg); }
+  .today-actions .btn.btn-danger { color: var(--ink); }
+  .today-actions .btn.btn-danger:active { color: #B5443A; }
+  .btn-doodle {
+    flex-shrink: 0;
+    filter: url(#wobble);
+  }
+
+  /* 历史复制按钮 */
+  .history-day-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--ink-faint);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .history-copy-btn,
+  .history-del-btn {
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 8px 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    position: relative;
+    transition: opacity 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .history-copy-btn:active,
+  .history-del-btn:active { opacity: 0.6; }
+  .history-del-btn { color: var(--ink-soft); }
+  .history-del-btn:hover { color: #B5443A; }
+
+  /* ==================== 抽签页 ==================== */
+  .lottery-stage {
+    text-align: center;
+    padding: 16px 10px 8px;
+  }
+  .lottery-display {
+    min-height: 180px;
+    margin: 16px 0 22px;
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transform: rotate(0.5deg);
+  }
+  .lottery-display .small {
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    letter-spacing: 6px;
+  }
+  .lottery-display .task-pick {
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.5;
+    letter-spacing: 3px;
+    max-width: 92%;
+    font-family: "Liu Jian Mao Cao", "Long Cang", "STKaiti", cursive;
+  }
+  .lottery-display.spinning .task-pick {
+    animation: shake 0.06s ease-in-out infinite;
+  }
+  @keyframes shake {
+    0%   { transform: translateX(-2px) rotate(-1deg);}
+    50%  { transform: translateX(2px)  rotate(1deg);}
+    100% { transform: translateX(-2px) rotate(-1deg);}
+  }
+  .lottery-actions {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-top: 8px;
+  }
+
+  /* ==================== 历史 ==================== */
+  .history-day {
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    position: relative;
+    transform: rotate(-0.3deg);
+  }
+  .history-day + .history-day { transform: rotate(0.3deg); }
+  .history-day h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    color: var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 2px;
+    font-weight: 400;
+    padding-bottom: 6px;
+    border-bottom: 2px dashed var(--ink);
+    font-family: "Liu Jian Mao Cao", "Long Cang", cursive;
+  }
+  .history-day .stat {
+    font-size: 16px;
+    color: var(--ink-soft);
+    letter-spacing: 1px;
+    font-family: "Caveat", "Long Cang", cursive;
+  }
+  .history-day ul { margin: 0; padding-left: 4px; list-style: none; }
+  .history-day li {
+    font-size: 19px;
+    padding: 4px 0;
+    color: var(--ink);
+    letter-spacing: 1px;
+    position: relative;
+    padding-left: 22px;
+  }
+  .history-day li::before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: var(--ink);
+    font-size: 16px;
+    font-family: "Long Cang", cursive;
+  }
+  .history-day li.done {
+    color: var(--ink-soft);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+  .history-day li.done::before {
+    content: "●";
+  }
+
+  /* ==================== 底部标签 ==================== */
+  nav.tabs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--paper);
+    border-top: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    z-index: 50;
+    filter: url(#wobble-soft);
+  }
+  nav.tabs button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 4px;
+    color: var(--ink-soft);
+    font-size: 16px;
+    letter-spacing: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+    font-family: inherit;
+  }
+  nav.tabs button .ico {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  nav.tabs button.active {
+    color: var(--ink);
+  }
+  nav.tabs button.active::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px; height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+  nav.tabs button.active .ico svg {
+    stroke: var(--ink);
+  }
+  nav.tabs button .ico svg {
+    stroke: var(--ink-soft);
+    transition: stroke 0.2s;
+  }
+
+  /* ==================== 弹窗 ==================== */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(26, 26, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 18px;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    padding: 26px 22px 22px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    background: transparent;
+    transform: rotate(-0.5deg);
+  }
+  .modal::before {
+    background: var(--paper);
+    border-width: 2.5px !important;
+  }
+  .modal h2 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    color: var(--ink);
+    text-align: center;
+    letter-spacing: 5px;
+    font-weight: 400;
+    font-family: "Liu Jian Mao Cao", "Long Cang", cursive;
+    transform: rotate(0.8deg);
+  }
+  .modal .modal-sub {
+    margin: 4px 0 18px;
+    color: var(--ink-soft);
+    text-align: center;
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+  .modal-options { display: flex; flex-direction: column; gap: 12px; }
+  .modal-options button {
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 14px 16px 14px 46px;
+    font-size: 19px;
+    color: var(--ink);
+    cursor: pointer;
+    line-height: 1.45;
+    letter-spacing: 1.5px;
+    font-family: inherit;
+    position: relative;
+    transition: opacity 0.15s;
+  }
+  .modal-options button::after {
+    content: attr(data-num);
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translate(0, -50%) rotate(-3deg);
+    font-size: 22px;
+    color: var(--ink);
+    font-family: "Caveat", "Long Cang", cursive;
+    font-weight: 700;
+  }
+  .modal-options button .opt-sub {
+    display: block;
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+  .modal-options .opt-frame {
+    position: relative;
+  }
+  .modal-options .opt-frame::before {
+    border-radius: 12px 16px 14px 10px / 14px 10px 16px 12px;
+  }
+  .modal-options .opt-frame:active { opacity: 0.7; }
+
+  /* ==================== 示例数据栏 ==================== */
+  .demo-bar {
+    margin: 22px auto 4px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 14px;
+    padding: 16px 4px;
+    border-top: 1px dashed var(--ink-faint);
+    opacity: 0.85;
+  }
+  .demo-link {
+    background: transparent;
+    border: 1.5px dashed var(--ink-faint);
+    border-radius: 8px 12px 10px 14px;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 15px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .demo-link:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+    background: var(--paper-2);
+  }
+  .demo-link:active { transform: scale(0.95); }
+  .demo-link-danger:hover { color: #B5443A; border-color: #B5443A; }
+
+  /* ==================== 提示条 ==================== */
+  .toast {
+    position: fixed;
+    bottom: 110px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px) rotate(-1deg);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 22px;
+    border-radius: 30px 20px 24px 28px;
+    font-size: 18px;
+    letter-spacing: 3px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 200;
+    font-family: inherit;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotate(-1deg);
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 全局 SVG 滤镜：手绘抖动边框 ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3"/>
+    </filter>
+    <filter id="wobble-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="1" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="app">
+  <header>
+    <!-- 小猫涂鸦：胖圆脸+尖耳+弯月眼+三角鼻+两边各两根胡须 -->
+    <svg class="header-doodle" viewBox="0 0 90 80">
+      <g fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#wobble)">
+        <!-- 头 -->
+        <path d="M 18,42 C 16,26 30,20 45,20 C 60,20 74,26 72,42 C 74,58 60,68 45,68 C 30,68 16,58 18,42 Z"/>
+        <!-- 左耳 -->
+        <path d="M 25,22 L 30,11 L 38,22"/>
+        <!-- 右耳 -->
+        <path d="M 52,22 L 60,11 L 65,22"/>
+        <!-- 左眼 -->
+        <path d="M 30,38 Q 33,35 36,38"/>
+        <!-- 右眼 -->
+        <path d="M 54,38 Q 57,35 60,38"/>
+        <!-- 鼻 -->
+        <path d="M 42,44 L 45,48 L 48,44 Z" fill="#1A1A1A"/>
+        <!-- 嘴 -->
+        <path d="M 45,48 L 45,51"/>
+        <!-- 左胡须 -->
+        <path d="M 25,45 L 12,44"/>
+        <path d="M 25,48 L 12,49"/>
+        <!-- 右胡须 -->
+        <path d="M 65,45 L 78,44"/>
+        <path d="M 65,48 L 78,49"/>
+      </g>
+    </svg>
+
+    <h1>
+      <span id="pageTitle">今日清单</span>
+      <span class="en" id="pageTitleEn">Today's List</span>
+    </h1>
+    <div class="date sk" id="todayDateWrap">
+      <span id="todayDate" style="padding: 4px 14px; display: inline-block;">—</span>
+    </div>
+  </header>
+
+  <!-- ===== 今日 ===== -->
+  <section class="screen active" id="screen-today">
+    <div class="card sk">
+      <div class="add-row">
+        <div class="input-wrap sk">
+          <input id="newTaskInput" type="text" placeholder="写下今天想做的事…" maxlength="200" />
+        </div>
+        <button class="btn btn-fill sk sk-solid" id="addTaskBtn">+ 添加</button>
+      </div>
+    </div>
+
+    <div class="card sk">
+      <ul class="task-list" id="taskList"></ul>
+      <div class="empty-state" id="todayEmpty" style="display:none;">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round" filter="url(#wobble)">
+          <circle cx="30" cy="30" r="20"/>
+          <path d="M22,36 Q30,42 38,36"/>
+          <circle cx="23" cy="26" r="1.5" fill="#5A5A5A"/>
+          <circle cx="37" cy="26" r="1.5" fill="#5A5A5A"/>
+        </svg>
+        今日还是空白，<br>自己写两条，或去「清单历史」复制一份～
+      </div>
+    </div>
+
+    <!-- 今日操作 -->
+    <div class="today-actions">
+      <button class="btn sk" id="saveTodayBtn">
+        <svg class="btn-doodle" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 13 L4 20 L20 20 L20 13"/>
+          <path d="M12 4 L12 16"/>
+          <path d="M7 11 L12 16 L17 11"/>
+        </svg>
+        存入清单历史
+      </button>
+      <button class="btn sk btn-danger" id="clearTodayBtn">
+        <svg class="btn-doodle" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 4 L10.5 9 L15 10 L10.5 11 L10 16 L9.5 11 L5 10 L9.5 9 Z"/>
+          <path d="M17 14 L17.3 17 L20 17.5 L17.3 18 L17 21 L16.7 18 L14 17.5 L16.7 17 Z"/>
+        </svg>
+        清空清单
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== 抽签 ===== -->
+  <section class="screen" id="screen-lottery">
+    <div class="lottery-stage">
+      <div class="lottery-display sk" id="lotteryDisplay">
+        <div class="small">~ 今日之签 ~</div>
+        <div class="task-pick" id="lotteryText">摇一摇签筒～</div>
+      </div>
+      <div class="lottery-actions">
+        <button class="btn btn-fill sk sk-solid btn-primary large" id="pickBtn">抽 一 签</button>
+        <button class="btn sk" id="doneBtn" style="display:none; padding: 12px;">✓ 这件事做完啦</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 历史 ===== -->
+  <section class="screen" id="screen-history">
+    <div id="historyContainer"></div>
+    <div class="empty-state" id="historyEmpty" style="display:none;">
+      <svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round" filter="url(#wobble)">
+        <rect x="14" y="12" width="32" height="36" rx="2"/>
+        <line x1="20" y1="22" x2="40" y2="22"/>
+        <line x1="20" y1="30" x2="36" y2="30"/>
+        <line x1="20" y1="38" x2="33" y2="38"/>
+      </svg>
+      还没有过往的记录
+    </div>
+  </section>
+
+  <!-- 示例数据控制 -->
+  <div class="demo-bar">
+    <button class="demo-link" id="demoReloadBtn">🔄 重新载入示例数据</button>
+    <button class="demo-link" id="demoNewDayBtn">📅 模拟新的一天</button>
+    <button class="demo-link demo-link-danger" id="demoClearBtn">🗑️ 清空全部</button>
+  </div>
+</div>
+
+<!-- 底部标签 -->
+<nav class="tabs">
+  <button data-tab="today" class="active">
+    <span class="ico">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="6" width="18" height="18" rx="2"/>
+        <line x1="5" y1="11" x2="23" y2="11"/>
+        <line x1="10" y1="6" x2="10" y2="4"/>
+        <line x1="18" y1="6" x2="18" y2="4"/>
+      </svg>
+    </span>
+    <span>今日</span>
+  </button>
+  <button data-tab="lottery">
+    <span class="ico">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="6" width="16" height="16" rx="2"/>
+        <circle cx="11" cy="11" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="17" cy="17" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="17" cy="11" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="14" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span>抽签</span>
+  </button>
+  <button data-tab="history">
+    <span class="ico">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7,5 L7,23 L21,23 L21,9 L17,5 Z"/>
+        <line x1="10" y1="13" x2="18" y2="13"/>
+        <line x1="10" y1="17" x2="18" y2="17"/>
+      </svg>
+    </span>
+    <span>往日</span>
+  </button>
+</nav>
+
+<!-- 新一天弹窗 -->
+<div class="modal-bg" id="newDayModal">
+  <div class="modal sk">
+    <h2>新的一天～</h2>
+    <p class="modal-sub"><span id="newDayDate">今天</span> · 怎么开始呢？</p>
+    <div class="modal-options">
+      <button class="opt-frame sk" data-choice="copyAll" data-num="①">
+        <span style="padding-left: 22px;">复制昨天的全部</span>
+        <span class="opt-sub" style="padding-left: 22px;">昨天的清单都搬过来</span>
+      </button>
+      <button class="opt-frame sk" data-choice="copyUnfinished" data-num="②">
+        <span style="padding-left: 22px;">只要没做完的</span>
+        <span class="opt-sub" style="padding-left: 22px;">接着昨天没做完的继续</span>
+      </button>
+      <button class="opt-frame sk" data-choice="blank" data-num="③">
+        <span style="padding-left: 22px;">从空白开始</span>
+        <span class="opt-sub" style="padding-left: 22px;">崭新的一页</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   每日抽签待办（手绘速写本风格）
+   ========================================================= */
+const STORAGE_KEY   = "dlt_days";      // 当前工作中的今日清单
+const HISTORY_KEY   = "dlt_history";   // 已保存的快照（清单历史）
+const LAST_DATE_KEY = "dlt_lastDate";
+const WEEKDAYS = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function prettyDate(s) {
+  if (!s) return "";
+  const [y,m,d] = s.split("-").map(Number);
+  const dt = new Date(y, m-1, d);
+  return `${m}/${d}  ${WEEKDAYS[dt.getDay()]}`;
+}
+function loadAll() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function saveAll(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+function getTasks(date) { return loadAll()[date] || []; }
+function setTasks(date, tasks) {
+  const all = loadAll(); all[date] = tasks; saveAll(all);
+}
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function saveHistoryStore(d) { localStorage.setItem(HISTORY_KEY, JSON.stringify(d)); }
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+/* ---------- 今日操作：保存 / 清空 / 从历史复制 ---------- */
+function saveTodayToHistory() {
+  const today = todayStr();
+  const tasks = getTasks(today);
+  if (tasks.length === 0) { toast("今日还没有任务呢~"); return; }
+  const history = loadHistory();
+  const existed = !!history[today];
+  // 深拷贝，做成独立快照
+  history[today] = tasks.map(t => ({ id: uid(), text: t.text, done: !!t.done }));
+  saveHistoryStore(history);
+  toast(existed ? "已更新到清单历史 ✓" : "已保存到清单历史 ✓");
+}
+
+function clearTodayTasks() {
+  const today = todayStr();
+  const tasks = getTasks(today);
+  if (tasks.length === 0) { toast("今日已经是空的~"); return; }
+  if (!confirm(`确定要清空今日的 ${tasks.length} 件任务吗？\n（清空前记得先「保存到清单历史」哦~）`)) return;
+  setTasks(today, []);
+  renderToday();
+  toast("今日已清空 ✓");
+}
+
+function copyHistoryToToday(date) {
+  const today = todayStr();
+  const current = getTasks(today);
+  if (current.length > 0) {
+    if (!confirm(`今日已有 ${current.length} 件任务，要替换为「${prettyDate(date)}」的清单吗？`)) return;
+  }
+  const history = loadHistory();
+  const source = history[date] || [];
+  // 全部重置为未完成、新生成 ID
+  const newTasks = source.map(t => ({ id: uid(), text: t.text, done: false }));
+  setTasks(today, newTasks);
+  switchTab("today");
+  toast("已复制到今日 ✓");
+}
+
+function deleteHistoryEntry(date) {
+  if (!confirm(`确定要从清单历史中删除「${prettyDate(date)}」吗？`)) return;
+  const history = loadHistory();
+  delete history[date];
+  saveHistoryStore(history);
+  renderHistory();
+  toast("已删除");
+}
+
+let currentDate = todayStr();
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._tid);
+  toast._tid = setTimeout(() => t.classList.remove("show"), 1800);
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function renderToday() {
+  const list = document.getElementById("taskList");
+  const empty = document.getElementById("todayEmpty");
+  const tasks = getTasks(currentDate);
+  list.innerHTML = "";
+  if (tasks.length === 0) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  tasks.forEach((task, idx) => {
+    const li = document.createElement("li");
+    li.className = "task-item" + (task.done ? " done" : "");
+    li.dataset.id = task.id;
+    li.innerHTML = `
+      <div class="task-num">${idx + 1}.</div>
+      <div class="task-text sk" data-id="${task.id}" data-action="edit" title="点击修改，清空文字即可删除">${escapeHtml(task.text)}</div>
+      <button class="task-check" data-action="toggle" aria-label="完成">✓</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function addTask() {
+  const input = document.getElementById("newTaskInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const tasks = getTasks(currentDate);
+  tasks.push({ id: uid(), text, done: false });
+  setTasks(currentDate, tasks);
+  input.value = "";
+  renderToday();
+}
+function toggleTask(id) {
+  const tasks = getTasks(currentDate);
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  setTasks(currentDate, tasks);
+  renderToday();
+}
+function deleteTask(id) {
+  let tasks = getTasks(currentDate);
+  tasks = tasks.filter(t => t.id !== id);
+  setTasks(currentDate, tasks);
+  renderToday();
+}
+function startEdit(id) {
+  const el = document.querySelector(`.task-text[data-id="${id}"]`);
+  if (!el) return;
+  el.setAttribute("contenteditable", "true");
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges(); sel.addRange(range);
+  function finish() {
+    el.removeAttribute("contenteditable");
+    el.removeEventListener("blur", finish);
+    el.removeEventListener("keydown", onKey);
+    const newText = el.textContent.trim();
+    if (!newText) { deleteTask(id); return; }
+    const tasks = getTasks(currentDate);
+    const t = tasks.find(t => t.id === id);
+    if (t) { t.text = newText; setTasks(currentDate, tasks); }
+    renderToday();
+  }
+  function onKey(e) {
+    if (e.key === "Enter") { e.preventDefault(); el.blur(); }
+    if (e.key === "Escape") { e.preventDefault(); el.textContent = el.dataset.original || el.textContent; el.blur(); }
+  }
+  el.dataset.original = el.textContent;
+  el.addEventListener("blur", finish);
+  el.addEventListener("keydown", onKey);
+}
+
+let lotteryPicked = null;
+function pickRandomTask() {
+  const tasks = getTasks(currentDate);
+  const unfinished = tasks.filter(t => !t.done);
+  const display = document.getElementById("lotteryDisplay");
+  const text = document.getElementById("lotteryText");
+  const doneBtn = document.getElementById("doneBtn");
+  if (unfinished.length === 0) {
+    text.textContent = "今天的事都做完啦~";
+    lotteryPicked = null;
+    doneBtn.style.display = "none";
+    return;
+  }
+  display.classList.add("spinning");
+  doneBtn.style.display = "none";
+  let spins = 0; const total = 10;
+  const interval = setInterval(() => {
+    const r = unfinished[Math.floor(Math.random() * unfinished.length)];
+    text.textContent = r.text;
+    spins++;
+    if (spins >= total) {
+      clearInterval(interval);
+      display.classList.remove("spinning");
+      const final = unfinished[Math.floor(Math.random() * unfinished.length)];
+      text.textContent = final.text;
+      lotteryPicked = final.id;
+      doneBtn.style.display = "block";
+    }
+  }, 80);
+}
+function markPickedDone() {
+  if (!lotteryPicked) return;
+  toggleTask(lotteryPicked);
+  toast("做完啦~");
+  lotteryPicked = null;
+  document.getElementById("doneBtn").style.display = "none";
+  const remaining = getTasks(currentDate).filter(t => !t.done);
+  if (remaining.length > 0) {
+    setTimeout(pickRandomTask, 400);
+  } else {
+    document.getElementById("lotteryText").textContent = "今天的事都做完啦~";
+  }
+}
+
+function renderHistory() {
+  const container = document.getElementById("historyContainer");
+  const empty = document.getElementById("historyEmpty");
+  const history = loadHistory();
+  const dates = Object.keys(history)
+    .filter(d => (history[d] || []).length > 0)
+    .sort((a,b) => b.localeCompare(a));
+  container.innerHTML = "";
+  if (dates.length === 0) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  dates.forEach(date => {
+    const tasks = history[date];
+    const doneCount = tasks.filter(t => t.done).length;
+    const isToday = (date === todayStr());
+    const wrap = document.createElement("div");
+    wrap.className = "history-day sk";
+    wrap.innerHTML = `
+      <h3>
+        <span>${escapeHtml(prettyDate(date))}${isToday ? ' · 今' : ''}</span>
+        <span class="stat">${doneCount}/${tasks.length}</span>
+      </h3>
+      <ul>
+        ${tasks.map(t => `<li class="${t.done ? 'done' : ''}">${escapeHtml(t.text)}</li>`).join("")}
+      </ul>
+      <div class="history-day-footer">
+        <button class="history-del-btn" data-history-action="delete" data-date="${date}">删除</button>
+        <button class="history-copy-btn sk" data-history-action="copy" data-date="${date}">
+          <svg class="btn-doodle" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 4 L19 4 L19 16 L9 16 Z"/>
+            <path d="M5 8 L15 8 L15 20 L5 20 Z"/>
+          </svg>
+          复制到今日
+        </button>
+      </div>
+    `;
+    container.appendChild(wrap);
+  });
+}
+
+function maybeShowNewDayModal() {
+  const today = todayStr();
+  const last  = localStorage.getItem(LAST_DATE_KEY);
+  const all   = loadAll();
+  if (!last) { localStorage.setItem(LAST_DATE_KEY, today); return; }
+  if (last === today) return;
+  const priorDates = Object.keys(all).filter(d => d < today).sort();
+  const prior = priorDates.length ? priorDates[priorDates.length-1] : null;
+  const priorTasks = prior ? (all[prior] || []) : [];
+  if ((all[today] || []).length > 0) { localStorage.setItem(LAST_DATE_KEY, today); return; }
+  if (priorTasks.length === 0) { localStorage.setItem(LAST_DATE_KEY, today); return; }
+  const modal = document.getElementById("newDayModal");
+  document.getElementById("newDayDate").textContent = prettyDate(today);
+  modal.classList.add("active");
+  modal.querySelectorAll(".modal-options button").forEach(btn => {
+    btn.onclick = () => {
+      const choice = btn.dataset.choice;
+      let newTasks = [];
+      if (choice === "copyAll") {
+        newTasks = priorTasks.map(t => ({ id: uid(), text: t.text, done: false }));
+      } else if (choice === "copyUnfinished") {
+        newTasks = priorTasks.filter(t => !t.done).map(t => ({ id: uid(), text: t.text, done: false }));
+      }
+      setTasks(today, newTasks);
+      localStorage.setItem(LAST_DATE_KEY, today);
+      modal.classList.remove("active");
+      currentDate = today;
+      updateHeaderDate(); renderToday(); renderHistory();
+      toast(choice === "blank" ? "新的一天～" : "搬过来啦~");
+    };
+  });
+}
+
+function updateHeaderDate() {
+  document.getElementById("todayDate").textContent = prettyDate(currentDate);
+}
+const PAGE_TITLES = {
+  today:   { zh: "今日清单", en: "Today's List" },
+  lottery: { zh: "今日抽签", en: "Today's Lottery" },
+  history: { zh: "清单历史", en: "History" },
+};
+function switchTab(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen-" + name).classList.add("active");
+  document.querySelectorAll("nav.tabs button").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === name);
+  });
+  // 切换大标题
+  const t = PAGE_TITLES[name];
+  if (t) {
+    document.getElementById("pageTitle").textContent = t.zh;
+    document.getElementById("pageTitleEn").textContent = t.en;
+  }
+  if (name === "history") renderHistory();
+  if (name === "today")   renderToday();
+}
+
+/* ---------- 示例数据 ---------- */
+function dateNDaysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function buildDemoData() {
+  const today = todayStr();
+  const d1 = dateNDaysAgo(1);
+  const d2 = dateNDaysAgo(2);
+  const d3 = dateNDaysAgo(3);
+  return {
+    today: {
+      [today]: [
+        { id: uid(), text: "给绿萝浇水",       done: false },
+        { id: uid(), text: "看半小时书",       done: false },
+        { id: uid(), text: "整理桌面",         done: false },
+        { id: uid(), text: "写一段日记",       done: false },
+        { id: uid(), text: "出门散步20分钟",   done: true  },
+      ]
+    },
+    history: {
+      [d1]: [
+        { id: uid(), text: "洗衣服",           done: true  },
+        { id: uid(), text: "给妈妈打电话",     done: true  },
+        { id: uid(), text: "学习英语半小时",   done: true  },
+        { id: uid(), text: "早睡",             done: false },
+      ],
+      [d2]: [
+        { id: uid(), text: "去公园跑步",       done: true  },
+        { id: uid(), text: "拖地",             done: true  },
+        { id: uid(), text: "看一部电影",       done: true  },
+      ],
+      [d3]: [
+        { id: uid(), text: "写工作汇报",       done: true  },
+        { id: uid(), text: "买菜",             done: true  },
+        { id: uid(), text: "修电脑",           done: false },
+        { id: uid(), text: "学一节网课",       done: false },
+      ],
+    }
+  };
+}
+
+function seedFreshDemo() {
+  // 今日已填好 + 历史里有 3 天的记录
+  const data = buildDemoData();
+  saveAll(data.today);
+  saveHistoryStore(data.history);
+  localStorage.setItem(LAST_DATE_KEY, todayStr());
+}
+
+function seedNewDayDemo() {
+  // 今日为空 + 历史里有 3 天可复制
+  const data = buildDemoData();
+  saveAll({});
+  saveHistoryStore(data.history);
+  localStorage.setItem(LAST_DATE_KEY, todayStr());
+}
+
+function clearAll() {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(HISTORY_KEY);
+  localStorage.removeItem(LAST_DATE_KEY);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  currentDate = todayStr();
+  // 首次访问 -> 自动加载示例（今日 + 历史都为空时）
+  if (Object.keys(loadAll()).length === 0 && Object.keys(loadHistory()).length === 0) {
+    seedFreshDemo();
+  }
+  updateHeaderDate();
+  renderToday();
+
+  document.getElementById("addTaskBtn").addEventListener("click", addTask);
+  document.getElementById("newTaskInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") addTask();
+  });
+  document.getElementById("taskList").addEventListener("click", e => {
+    if (e.target.getAttribute("contenteditable") === "true") return;
+    const trigger = e.target.closest("[data-action]");
+    if (!trigger) return;
+    const li = e.target.closest(".task-item");
+    if (!li) return;
+    const id = li.dataset.id;
+    const action = trigger.dataset.action;
+    if (action === "toggle") toggleTask(id);
+    else if (action === "edit") startEdit(id);
+    else if (action === "delete") deleteTask(id);
+  });
+  document.getElementById("pickBtn").addEventListener("click", pickRandomTask);
+  document.getElementById("doneBtn").addEventListener("click", markPickedDone);
+
+  // 今日：保存历史 / 清空今日
+  document.getElementById("saveTodayBtn").addEventListener("click", saveTodayToHistory);
+  document.getElementById("clearTodayBtn").addEventListener("click", clearTodayTasks);
+
+  // 历史列表里的：复制到今日 / 删除
+  document.getElementById("historyContainer").addEventListener("click", e => {
+    const btn = e.target.closest("[data-history-action]");
+    if (!btn) return;
+    const date = btn.dataset.date;
+    const action = btn.dataset.historyAction;
+    if (action === "copy")   copyHistoryToToday(date);
+    else if (action === "delete") deleteHistoryEntry(date);
+  });
+
+  document.querySelectorAll("nav.tabs button").forEach(b => {
+    b.addEventListener("click", () => switchTab(b.dataset.tab));
+  });
+
+  // 示例数据按钮
+  document.getElementById("demoReloadBtn").addEventListener("click", () => {
+    if (confirm("将清除当前所有任务，重新载入示例数据。继续？")) {
+      clearAll();
+      seedFreshDemo();
+      location.reload();
+    }
+  });
+  document.getElementById("demoNewDayBtn").addEventListener("click", () => {
+    if (confirm("将模拟一个新的一天（弹出新一天选项框）。继续？")) {
+      clearAll();
+      seedNewDayDemo();
+      location.reload();
+    }
+  });
+  document.getElementById("demoClearBtn").addEventListener("click", () => {
+    if (confirm("将清空全部数据，回到完全空白状态。继续？")) {
+      clearAll();
+      location.reload();
+    }
+  });
+
+  // 跨午夜：日期变了刷新一下头部和今日视图
+  setInterval(() => {
+    const t = todayStr();
+    if (t !== currentDate) {
+      currentDate = t;
+      updateHeaderDate();
+      renderToday();
+    }
+  }, 60 * 1000);
+});
+
+/* ---------- PWA: 注册 Service Worker ---------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(err =>
+      console.warn("Service Worker 注册失败:", err)
+    );
+  });
+}
+</script>
+</body>
+</html>
