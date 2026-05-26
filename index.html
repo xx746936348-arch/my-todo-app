@@ -42,9 +42,12 @@
   html, body {
     margin: 0; padding: 0;
     color: var(--ink);
+    /* 优先 Google 手写体 → iOS 内置手写/楷体 → 通用兜底 */
     font-family: "Long Cang", "Liu Jian Mao Cao", "ZCOOL KuaiLe",
-                 "Ma Shan Zheng", "Caveat", "Comic Sans MS",
-                 "STKaiti", "Kaiti SC", cursive;
+                 "Ma Shan Zheng", "Caveat",
+                 "Hannotate SC", "Hannotate TC", "Yuanti SC",
+                 "Kaiti SC", "STKaiti", "KaiTi",
+                 "Comic Sans MS", cursive, sans-serif;
     background: var(--paper);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
@@ -123,7 +126,7 @@
     font-weight: 400;
     letter-spacing: 4px;
     color: var(--ink);
-    font-family: "Liu Jian Mao Cao", "Long Cang", "ZCOOL KuaiLe", "Ma Shan Zheng", "STKaiti", cursive;
+    font-family: "Liu Jian Mao Cao", "Long Cang", "ZCOOL KuaiLe", "Ma Shan Zheng", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", "KaiTi", cursive;
     line-height: 1.1;
     transform: rotate(-1deg);
   }
@@ -132,7 +135,7 @@
     font-size: 13px;
     color: var(--ink-soft);
     margin-top: 2px;
-    font-family: "Caveat", cursive;
+    font-family: "Caveat", "Bradley Hand", "Marker Felt", cursive;
     letter-spacing: 1.5px;
     transform: rotate(0.5deg);
   }
@@ -141,7 +144,7 @@
     color: var(--ink-soft);
     margin-top: 6px;
     letter-spacing: 1.5px;
-    font-family: "Long Cang", "Liu Jian Mao Cao", "STKaiti", cursive;
+    font-family: "Long Cang", "Liu Jian Mao Cao", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", "KaiTi", cursive;
   }
   header .date-stripe {
     display: inline-block;
@@ -246,7 +249,7 @@
     font-size: 20px;
     font-weight: 400;
     color: var(--ink);
-    font-family: "Caveat", "Long Cang", cursive;
+    font-family: "Caveat", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
     position: relative;
     transform: rotate(-2deg);
   }
@@ -289,7 +292,7 @@
     padding: 0; line-height: 1;
     position: relative;
     border: none;
-    font-family: "Long Cang", cursive;
+    font-family: "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
   }
   .task-check::before {
     content: "";
@@ -394,7 +397,6 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    transform: rotate(0.5deg);
   }
   .lottery-display .small {
     font-size: 18px;
@@ -409,7 +411,7 @@
     line-height: 1.5;
     letter-spacing: 3px;
     max-width: 92%;
-    font-family: "Liu Jian Mao Cao", "Long Cang", "STKaiti", cursive;
+    font-family: "Liu Jian Mao Cao", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", "KaiTi", cursive;
   }
   .lottery-display.spinning .task-pick {
     animation: shake 0.06s ease-in-out infinite;
@@ -443,13 +445,13 @@
     font-weight: 400;
     padding-bottom: 6px;
     border-bottom: 2px dashed var(--ink);
-    font-family: "Liu Jian Mao Cao", "Long Cang", cursive;
+    font-family: "Liu Jian Mao Cao", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
   }
   .history-day .stat {
     font-size: 16px;
     color: var(--ink-soft);
     letter-spacing: 1px;
-    font-family: "Caveat", "Long Cang", cursive;
+    font-family: "Caveat", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
   }
   .history-day ul { margin: 0; padding-left: 4px; list-style: none; }
   .history-day li {
@@ -466,7 +468,7 @@
     left: 0;
     color: var(--ink);
     font-size: 16px;
-    font-family: "Long Cang", cursive;
+    font-family: "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
   }
   .history-day li.done {
     color: var(--ink-soft);
@@ -562,7 +564,7 @@
     text-align: center;
     letter-spacing: 5px;
     font-weight: 400;
-    font-family: "Liu Jian Mao Cao", "Long Cang", cursive;
+    font-family: "Liu Jian Mao Cao", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
     transform: rotate(0.8deg);
   }
   .modal .modal-sub {
@@ -594,7 +596,7 @@
     transform: translate(0, -50%) rotate(-3deg);
     font-size: 22px;
     color: var(--ink);
-    font-family: "Caveat", "Long Cang", cursive;
+    font-family: "Caveat", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
     font-weight: 700;
   }
   .modal-options button .opt-sub {
