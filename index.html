@@ -901,22 +901,15 @@ async function clearTodayTasks() {
   toast("今日已清空 ✓");
 }
 
-async function copyHistoryToToday(date) {
+function copyHistoryToToday(date) {
+  // 直接覆盖今日清单（无论今日是否已有任务），不再二次确认
   const today = todayStr();
-  const current = getTasks(today);
-  if (current.length > 0) {
-    const ok = await appConfirm(
-      `今日已有 ${current.length} 件任务，要替换为「${prettyDate(date)}」的清单吗？`,
-      { title: "替换今日", okText: "替换", cancelText: "取消" }
-    );
-    if (!ok) return;
-  }
   const history = loadHistory();
   const source = history[date] || [];
   const newTasks = source.map(t => ({ id: uid(), text: t.text, done: false }));
   setTasks(today, newTasks);
   switchTab("today");
-  toast("已复制到今日 ✓");
+  toast("已覆盖今日清单 ✓");
 }
 
 async function deleteHistoryEntry(date) {
