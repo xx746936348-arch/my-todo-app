@@ -426,6 +426,80 @@
     margin-top: 8px;
   }
 
+  /* ==================== 工具页：随机数字 ==================== */
+  .tools-stage {
+    padding: 12px 8px;
+  }
+  .tools-hint {
+    text-align: center;
+    font-size: 19px;
+    color: var(--ink-soft);
+    margin: 6px 0 28px;
+    letter-spacing: 2px;
+  }
+  .random-range {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 4px 0 24px;
+  }
+  .range-input-wrap {
+    flex: 0 0 auto;
+    width: 130px;
+    padding: 6px 18px;
+    position: relative;
+  }
+  .range-input-wrap input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 34px;
+    text-align: center;
+    color: var(--ink);
+    letter-spacing: 1px;
+    padding: 6px 0;
+    -moz-appearance: textfield;
+  }
+  .range-input-wrap input::-webkit-outer-spin-button,
+  .range-input-wrap input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .range-sep {
+    font-size: 24px;
+    color: var(--ink-soft);
+    letter-spacing: 1px;
+  }
+  .random-display {
+    min-height: 220px;
+    margin: 16px 0 26px;
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .random-display .small {
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+    letter-spacing: 6px;
+  }
+  .random-display .random-number {
+    font-size: 130px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    font-family: "Caveat", "Long Cang", "Hannotate SC", "Yuanti SC", "Kaiti SC", "STKaiti", cursive;
+  }
+  .random-display.spinning .random-number {
+    animation: shake 0.06s ease-in-out infinite;
+  }
+
   /* ==================== 历史 ==================== */
   .history-day {
     margin-bottom: 16px;
@@ -737,14 +811,6 @@
 
     <!-- 今日操作 -->
     <div class="today-actions">
-      <button class="btn sk" id="saveTodayBtn">
-        <svg class="btn-doodle" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 13 L4 20 L20 20 L20 13"/>
-          <path d="M12 4 L12 16"/>
-          <path d="M7 11 L12 16 L17 11"/>
-        </svg>
-        存入清单历史
-      </button>
       <button class="btn sk btn-danger" id="clearTodayBtn">
         <svg class="btn-doodle" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 4 L10.5 9 L15 10 L10.5 11 L10 16 L9.5 11 L5 10 L9.5 9 Z"/>
@@ -769,17 +835,27 @@
     </div>
   </section>
 
-  <!-- ===== 历史 ===== -->
-  <section class="screen" id="screen-history">
-    <div id="historyContainer"></div>
-    <div class="empty-state" id="historyEmpty" style="display:none;">
-      <svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round" filter="url(#wobble)">
-        <rect x="14" y="12" width="32" height="36" rx="2"/>
-        <line x1="20" y1="22" x2="40" y2="22"/>
-        <line x1="20" y1="30" x2="36" y2="30"/>
-        <line x1="20" y1="38" x2="33" y2="38"/>
-      </svg>
-      还没有过往的记录
+  <!-- ===== 工具 ===== -->
+  <section class="screen" id="screen-tools">
+    <div class="tools-stage">
+      <p class="tools-hint">设个范围 · 让数字替你决定</p>
+
+      <div class="random-range">
+        <div class="range-input-wrap sk">
+          <input id="rangeMin" type="number" value="1" inputmode="numeric" />
+        </div>
+        <span class="range-sep">到</span>
+        <div class="range-input-wrap sk">
+          <input id="rangeMax" type="number" value="20" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div class="random-display sk" id="randomDisplay">
+        <div class="small">~ 抽 中 数 字 ~</div>
+        <div class="random-number" id="randomNumber">?</div>
+      </div>
+
+      <button class="btn btn-fill sk sk-solid btn-primary large" id="genNumberBtn">生 成 数 字</button>
     </div>
   </section>
 
@@ -811,15 +887,13 @@
     </span>
     <span>抽签</span>
   </button>
-  <button data-tab="history">
+  <button data-tab="tools">
     <span class="ico">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7,5 L7,23 L21,23 L21,9 L17,5 Z"/>
-        <line x1="10" y1="13" x2="18" y2="13"/>
-        <line x1="10" y1="17" x2="18" y2="17"/>
+        <path d="M 14,4 L 16,12 L 24,14 L 16,16 L 14,24 L 12,16 L 4,14 L 12,12 Z"/>
       </svg>
     </span>
-    <span>往日</span>
+    <span>工具</span>
   </button>
 </nav>
 
@@ -842,8 +916,6 @@
    每日抽签待办（手绘速写本风格）
    ========================================================= */
 const STORAGE_KEY   = "dlt_days";      // 当前工作中的今日清单
-const HISTORY_KEY   = "dlt_history";   // 已保存的快照（清单历史）
-const LAST_DATE_KEY = "dlt_lastDate";
 const WEEKDAYS = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
 
 function todayStr() {
@@ -865,26 +937,35 @@ function getTasks(date) { return loadAll()[date] || []; }
 function setTasks(date, tasks) {
   const all = loadAll(); all[date] = tasks; saveAll(all);
 }
-function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || {}; }
-  catch(e) { return {}; }
-}
-function saveHistoryStore(d) { localStorage.setItem(HISTORY_KEY, JSON.stringify(d)); }
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
 
-/* ---------- 今日操作：保存 / 清空 / 从历史复制 ---------- */
-function saveTodayToHistory() {
+/* ---------- 跨天自动重置 done 标记 ---------- */
+/*  数据模型：dlt_days[YYYY-MM-DD] = [tasks]，始终只保留"今日这一份"。
+    如果发现储存里的日期不是今日，就把那份清单带到今日、所有 done 全部重置为 false，
+    任务文字与顺序保持不变。 */
+function rolloverIfNewDay() {
+  const all = loadAll();
   const today = todayStr();
-  const tasks = getTasks(today);
-  if (tasks.length === 0) { toast("今日还没有任务呢~"); return; }
-  const history = loadHistory();
-  const existed = !!history[today];
-  // 深拷贝，做成独立快照
-  history[today] = tasks.map(t => ({ id: uid(), text: t.text, done: !!t.done }));
-  saveHistoryStore(history);
-  toast(existed ? "已更新到清单历史 ✓" : "已保存到清单历史 ✓");
+  const dates = Object.keys(all).sort();
+  if (dates.length === 0) return;
+
+  // 今日已存在条目：清掉所有非今日的旧条目就好
+  if (all[today] !== undefined) {
+    let changed = false;
+    dates.forEach(d => {
+      if (d !== today) { delete all[d]; changed = true; }
+    });
+    if (changed) saveAll(all);
+    return;
+  }
+
+  // 今日还没有条目：把最近一天的任务搬过来、done 全部重置
+  const mostRecent = dates[dates.length - 1];
+  const oldTasks = all[mostRecent] || [];
+  const resetTasks = oldTasks.map(t => ({ ...t, done: false }));
+  saveAll({ [today]: resetTasks });
 }
 
 async function clearTodayTasks() {
@@ -892,7 +973,7 @@ async function clearTodayTasks() {
   const tasks = getTasks(today);
   if (tasks.length === 0) { toast("今日已经是空的~"); return; }
   const ok = await appConfirm(
-    `确定要清空今日的 ${tasks.length} 件任务吗？清空前记得先「存入清单历史」哦~`,
+    `确定要清空今日的 ${tasks.length} 件任务吗？清空之后无法恢复~`,
     { title: "清空清单", okText: "清空", cancelText: "取消" }
   );
   if (!ok) return;
@@ -901,28 +982,29 @@ async function clearTodayTasks() {
   toast("今日已清空 ✓");
 }
 
-function copyHistoryToToday(date) {
-  // 直接覆盖今日清单（无论今日是否已有任务），不再二次确认
-  const today = todayStr();
-  const history = loadHistory();
-  const source = history[date] || [];
-  const newTasks = source.map(t => ({ id: uid(), text: t.text, done: false }));
-  setTasks(today, newTasks);
-  switchTab("today");
-  toast("已覆盖今日清单 ✓");
-}
+/* ---------- 工具页：随机数字 ---------- */
+function generateRandomNumber() {
+  const minEl = document.getElementById("rangeMin");
+  const maxEl = document.getElementById("rangeMax");
+  let min = parseInt(minEl.value, 10);
+  let max = parseInt(maxEl.value, 10);
+  if (isNaN(min) || isNaN(max)) { toast("请输入数字~"); return; }
+  if (min > max) { [min, max] = [max, min]; minEl.value = min; maxEl.value = max; }
 
-async function deleteHistoryEntry(date) {
-  const ok = await appConfirm(
-    `确定要从清单历史中删除「${prettyDate(date)}」吗？`,
-    { title: "删除记录", okText: "删除", cancelText: "取消" }
-  );
-  if (!ok) return;
-  const history = loadHistory();
-  delete history[date];
-  saveHistoryStore(history);
-  renderHistory();
-  toast("已删除");
+  const display = document.getElementById("randomDisplay");
+  const text = document.getElementById("randomNumber");
+  display.classList.add("spinning");
+  const rand = () => Math.floor(Math.random() * (max - min + 1)) + min;
+  let spins = 0; const total = 12;
+  const interval = setInterval(() => {
+    text.textContent = rand();
+    spins++;
+    if (spins >= total) {
+      clearInterval(interval);
+      display.classList.remove("spinning");
+      text.textContent = rand();
+    }
+  }, 70);
 }
 
 let currentDate = todayStr();
@@ -1096,77 +1178,6 @@ function markPickedDone() {
   }
 }
 
-function renderHistory() {
-  const container = document.getElementById("historyContainer");
-  const empty = document.getElementById("historyEmpty");
-  const history = loadHistory();
-  const dates = Object.keys(history)
-    .filter(d => (history[d] || []).length > 0)
-    .sort((a,b) => b.localeCompare(a));
-  container.innerHTML = "";
-  if (dates.length === 0) { empty.style.display = "block"; return; }
-  empty.style.display = "none";
-  dates.forEach(date => {
-    const tasks = history[date];
-    const doneCount = tasks.filter(t => t.done).length;
-    const isToday = (date === todayStr());
-    const wrap = document.createElement("div");
-    wrap.className = "history-day sk";
-    wrap.innerHTML = `
-      <h3>
-        <span>${escapeHtml(prettyDate(date))}${isToday ? ' · 今' : ''}</span>
-        <span class="stat">${doneCount}/${tasks.length}</span>
-      </h3>
-      <ul>
-        ${tasks.map(t => `<li class="${t.done ? 'done' : ''}">${escapeHtml(t.text)}</li>`).join("")}
-      </ul>
-      <div class="history-day-footer">
-        <button class="history-del-btn" data-history-action="delete" data-date="${date}">删除</button>
-        <button class="history-copy-btn sk" data-history-action="copy" data-date="${date}">
-          <svg class="btn-doodle" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 4 L19 4 L19 16 L9 16 Z"/>
-            <path d="M5 8 L15 8 L15 20 L5 20 Z"/>
-          </svg>
-          复制到今日
-        </button>
-      </div>
-    `;
-    container.appendChild(wrap);
-  });
-}
-
-function maybeShowNewDayModal() {
-  const today = todayStr();
-  const last  = localStorage.getItem(LAST_DATE_KEY);
-  const all   = loadAll();
-  if (!last) { localStorage.setItem(LAST_DATE_KEY, today); return; }
-  if (last === today) return;
-  const priorDates = Object.keys(all).filter(d => d < today).sort();
-  const prior = priorDates.length ? priorDates[priorDates.length-1] : null;
-  const priorTasks = prior ? (all[prior] || []) : [];
-  if ((all[today] || []).length > 0) { localStorage.setItem(LAST_DATE_KEY, today); return; }
-  if (priorTasks.length === 0) { localStorage.setItem(LAST_DATE_KEY, today); return; }
-  const modal = document.getElementById("newDayModal");
-  document.getElementById("newDayDate").textContent = prettyDate(today);
-  modal.classList.add("active");
-  modal.querySelectorAll(".modal-options button").forEach(btn => {
-    btn.onclick = () => {
-      const choice = btn.dataset.choice;
-      let newTasks = [];
-      if (choice === "copyAll") {
-        newTasks = priorTasks.map(t => ({ id: uid(), text: t.text, done: false }));
-      } else if (choice === "copyUnfinished") {
-        newTasks = priorTasks.filter(t => !t.done).map(t => ({ id: uid(), text: t.text, done: false }));
-      }
-      setTasks(today, newTasks);
-      localStorage.setItem(LAST_DATE_KEY, today);
-      modal.classList.remove("active");
-      currentDate = today;
-      updateHeaderDate(); renderToday(); renderHistory();
-      toast(choice === "blank" ? "新的一天～" : "搬过来啦~");
-    };
-  });
-}
 
 function updateHeaderDate() {
   document.getElementById("todayDate").textContent = prettyDate(currentDate);
@@ -1174,7 +1185,7 @@ function updateHeaderDate() {
 const PAGE_TITLES = {
   today:   { zh: "今日清单", en: "Today's List" },
   lottery: { zh: "今日抽签", en: "Today's Lottery" },
-  history: { zh: "清单历史", en: "History" },
+  tools:   { zh: "工具",     en: "Tools" },
 };
 function switchTab(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -1188,8 +1199,7 @@ function switchTab(name) {
     document.getElementById("pageTitle").textContent = t.zh;
     document.getElementById("pageTitleEn").textContent = t.en;
   }
-  if (name === "history") renderHistory();
-  if (name === "today")   renderToday();
+  if (name === "today") renderToday();
 }
 
 /* ---------- 示例数据 ---------- */
@@ -1199,67 +1209,13 @@ function dateNDaysAgo(n) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 
-function buildDemoData() {
-  const today = todayStr();
-  const d1 = dateNDaysAgo(1);
-  const d2 = dateNDaysAgo(2);
-  const d3 = dateNDaysAgo(3);
-  return {
-    today: {
-      [today]: [
-        { id: uid(), text: "给绿萝浇水",       done: false },
-        { id: uid(), text: "看半小时书",       done: false },
-        { id: uid(), text: "整理桌面",         done: false },
-        { id: uid(), text: "写一段日记",       done: false },
-        { id: uid(), text: "出门散步20分钟",   done: true  },
-      ]
-    },
-    history: {
-      [d1]: [
-        { id: uid(), text: "洗衣服",           done: true  },
-        { id: uid(), text: "给妈妈打电话",     done: true  },
-        { id: uid(), text: "学习英语半小时",   done: true  },
-        { id: uid(), text: "早睡",             done: false },
-      ],
-      [d2]: [
-        { id: uid(), text: "去公园跑步",       done: true  },
-        { id: uid(), text: "拖地",             done: true  },
-        { id: uid(), text: "看一部电影",       done: true  },
-      ],
-      [d3]: [
-        { id: uid(), text: "写工作汇报",       done: true  },
-        { id: uid(), text: "买菜",             done: true  },
-        { id: uid(), text: "修电脑",           done: false },
-        { id: uid(), text: "学一节网课",       done: false },
-      ],
-    }
-  };
-}
-
-function seedFreshDemo() {
-  // 今日已填好 + 历史里有 3 天的记录
-  const data = buildDemoData();
-  saveAll(data.today);
-  saveHistoryStore(data.history);
-  localStorage.setItem(LAST_DATE_KEY, todayStr());
-}
-
-function seedNewDayDemo() {
-  // 今日为空 + 历史里有 3 天可复制
-  const data = buildDemoData();
-  saveAll({});
-  saveHistoryStore(data.history);
-  localStorage.setItem(LAST_DATE_KEY, todayStr());
-}
-
-function clearAll() {
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(HISTORY_KEY);
-  localStorage.removeItem(LAST_DATE_KEY);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
+  // 老版本残留数据清理（迁移）
+  localStorage.removeItem("dlt_history");
+  localStorage.removeItem("dlt_lastDate");
+
   currentDate = todayStr();
+  rolloverIfNewDay();  // 跨天 → 把上一份带到今日，done 全部重置
   updateHeaderDate();
   renderToday();
 
@@ -1282,29 +1238,22 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("pickBtn").addEventListener("click", pickRandomTask);
   document.getElementById("doneBtn").addEventListener("click", markPickedDone);
 
-  // 今日：保存历史 / 清空今日
-  document.getElementById("saveTodayBtn").addEventListener("click", saveTodayToHistory);
+  // 今日：清空清单
   document.getElementById("clearTodayBtn").addEventListener("click", clearTodayTasks);
 
-  // 历史列表里的：复制到今日 / 删除
-  document.getElementById("historyContainer").addEventListener("click", e => {
-    const btn = e.target.closest("[data-history-action]");
-    if (!btn) return;
-    const date = btn.dataset.date;
-    const action = btn.dataset.historyAction;
-    if (action === "copy")   copyHistoryToToday(date);
-    else if (action === "delete") deleteHistoryEntry(date);
-  });
+  // 工具页：随机数字生成
+  document.getElementById("genNumberBtn").addEventListener("click", generateRandomNumber);
 
   document.querySelectorAll("nav.tabs button").forEach(b => {
     b.addEventListener("click", () => switchTab(b.dataset.tab));
   });
 
-  // 跨午夜：日期变了刷新一下头部和今日视图
+  // 跨午夜：日期变了 → 自动重置 done 标记 + 刷新视图
   setInterval(() => {
     const t = todayStr();
     if (t !== currentDate) {
       currentDate = t;
+      rolloverIfNewDay();
       updateHeaderDate();
       renderToday();
     }
