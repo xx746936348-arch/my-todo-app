@@ -428,26 +428,26 @@
 
   /* ==================== 工具页：随机数字 ==================== */
   .tools-stage {
-    padding: 12px 8px;
+    padding: 4px 8px;
   }
   .tools-hint {
     text-align: center;
-    font-size: 17px;
+    font-size: 15px;
     color: var(--ink-soft);
-    margin: 6px 0 22px;
+    margin: 2px 0 14px;
     letter-spacing: 2px;
   }
   .random-range {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin: 4px 0 18px;
+    gap: 10px;
+    margin: 2px 0 12px;
   }
   .range-input-wrap {
     flex: 0 0 auto;
-    width: 110px;
-    padding: 4px 14px;
+    width: 96px;
+    padding: 2px 12px;
     position: relative;
   }
   .range-input-wrap input {
@@ -456,7 +456,7 @@
     border: none;
     outline: none;
     font-family: inherit;
-    font-size: 26px;
+    font-size: 22px;
     text-align: center;
     color: var(--ink);
     letter-spacing: 1px;
@@ -469,14 +469,14 @@
     margin: 0;
   }
   .range-sep {
-    font-size: 20px;
+    font-size: 18px;
     color: var(--ink-soft);
     letter-spacing: 1px;
   }
   .random-display {
-    min-height: 180px;
-    margin: 16px 0 22px;
-    padding: 28px 22px;
+    min-height: 130px;
+    margin: 10px 0 14px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -484,13 +484,13 @@
     position: relative;
   }
   .random-display .small {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--ink-soft);
-    margin-bottom: 14px;
-    letter-spacing: 6px;
+    margin-bottom: 8px;
+    letter-spacing: 5px;
   }
   .random-display .random-number {
-    font-size: 80px;
+    font-size: 56px;
     font-weight: 700;
     color: var(--ink);
     line-height: 1;
@@ -498,6 +498,12 @@
   }
   .random-display.spinning .random-number {
     animation: shake 0.06s ease-in-out infinite;
+  }
+  /* 工具页的生成按钮：比签筒的"抽签"小一档，省竖向空间 */
+  #genNumberBtn {
+    padding: 12px 18px;
+    font-size: 20px;
+    letter-spacing: 4px;
   }
 
   /* ==================== 历史 ==================== */
