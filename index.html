@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#FDF8EE" />
 <title>今日清单</title>
 
@@ -176,6 +176,8 @@
   .add-row .input-wrap {
     flex: 1;
     padding: 4px 12px;
+    cursor: text;
+    isolation: isolate;             /* 隔离 ::before 的 z-index 影响 */
   }
   .add-row input[type="text"] {
     width: 100%;
@@ -187,6 +189,23 @@
     color: var(--ink);
     font-family: inherit;
     letter-spacing: 1px;
+    position: relative;             /* 配合 z-index 兜底 */
+    z-index: 2;
+    cursor: text;
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+  /* 工具页的两个数字输入框，同样兜底 */
+  .range-input-wrap {
+    isolation: isolate;
+  }
+  .range-input-wrap input {
+    position: relative;
+    z-index: 2;
+    cursor: text;
+    -webkit-user-select: text;
+    user-select: text;
   }
   .add-row input[type="text"]::placeholder {
     color: var(--ink-faint);
@@ -1228,6 +1247,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("addTaskBtn").addEventListener("click", addTask);
   document.getElementById("newTaskInput").addEventListener("keydown", e => {
     if (e.key === "Enter") addTask();
+  });
+
+  // iOS PWA：点包装层时强制聚焦内部 input（修一个偶发的"键盘不弹出"bug）
+  document.querySelectorAll(".input-wrap, .range-input-wrap").forEach(wrap => {
+    wrap.addEventListener("click", e => {
+      if (e.target.tagName === "INPUT") return; // 直接点到 input 就不用再 focus 一次
+      const input = wrap.querySelector("input");
+      if (input) input.focus();
+    });
   });
   document.getElementById("taskList").addEventListener("click", e => {
     if (e.target.getAttribute("contenteditable") === "true") return;
