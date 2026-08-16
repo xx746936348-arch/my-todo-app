@@ -402,6 +402,229 @@
   .history-del-btn { color: var(--ink-soft); }
   .history-del-btn:hover { color: #B5443A; }
 
+  /* ==================== 今日页悬浮小工具按钮 ==================== */
+  .today-tool-btn {
+    position: absolute;
+    top: -6px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    background: var(--paper);
+    border: none;
+    padding: 0;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: transform 0.1s;
+    border-radius: 50%;
+  }
+  .today-tool-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--ink);
+    border-radius: 50% 48% 52% 50% / 50% 52% 48% 50%;
+    filter: url(#wobble);
+    background: var(--paper);
+    z-index: -1;
+  }
+  .today-tool-btn:active { transform: scale(0.9); }
+  #screen-today { position: relative; }
+
+  /* 随机数字 modal 内适当调整 */
+  #randomModal .random-display {
+    min-height: 100px;
+    margin: 12px 0 4px;
+    padding: 16px 20px;
+  }
+  #randomModal .random-display .random-number { font-size: 48px; }
+  #randomModal .random-display .small { font-size: 11px; margin-bottom: 6px; }
+  #randomModal .random-range { margin: 4px 0 8px; }
+
+  /* ==================== "值得写下来" 小贴士栏 ==================== */
+  .tips-card {
+    padding: 4px 14px;
+    margin-bottom: 12px;
+    background: transparent;
+    transform: rotate(-0.4deg);
+    color: var(--ink);
+  }
+  .tips-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px 4px;
+    font-family: inherit;
+    color: var(--ink);
+    font-size: 17px;
+    letter-spacing: 1px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tips-title { font-weight: 600; }
+  .tips-chevron {
+    color: var(--ink-soft);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  .tips-card.collapsed .tips-chevron { transform: rotate(-90deg); }
+  .tips-body {
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.25s ease;
+    opacity: 1;
+    padding: 6px 4px 12px;
+  }
+  .tips-card.collapsed .tips-body {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .tips-group { margin: 10px 0 8px; }
+  .tips-group + .tips-group {
+    padding-top: 8px;
+    border-top: 1px dashed rgba(90,90,90,0.3);
+  }
+  .tips-label {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tips-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    flex-shrink: 0;
+  }
+  .tips-dot.dot-red    { background: #D9534F; }
+  .tips-dot.dot-yellow { background: #F2D047; }
+  .tips-dot.dot-green  { background: #A8CB9A; }
+  .tips-dot.dot-white  { background: #FFFFFF; }
+  .tips-list {
+    margin: 4px 0;
+    padding-left: 22px;
+    list-style: none;
+  }
+  .tips-list li {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    position: relative;
+    padding-left: 4px;
+  }
+  .tips-list li::before {
+    content: "·";
+    position: absolute;
+    left: -14px;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ink-soft);
+  }
+  .tips-p {
+    margin: 4px 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .tips-note { color: var(--ink-soft); font-size: 13px; }
+
+  /* ==================== 任务优先级小圆点 ==================== */
+  .task-priority {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    transition: transform 0.1s;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .task-priority:active { transform: scale(0.85); }
+  .task-priority.priority-white  { background: #FFFFFF; }
+  .task-priority.priority-green  { background: #A8CB9A; }
+  .task-priority.priority-yellow { background: #F2D047; }
+  .task-priority.priority-red    { background: #D9534F; }
+  /* 老 orange 数据向后兼容显示为黄 */
+  .task-priority.priority-orange { background: #F2D047; }
+
+  /* ==================== 随记列表 ==================== */
+  .note-list { list-style: none; padding: 0; margin: 0; }
+  .note-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    margin-bottom: 8px;
+    gap: 10px;
+  }
+  .note-num {
+    flex-shrink: 0;
+    width: 26px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: "Caveat", cursive;
+    font-size: 20px;
+  }
+  .note-text {
+    flex: 1;
+    font-size: 18px;
+    line-height: 1.4;
+    word-break: break-word;
+    padding: 10px 14px;
+    color: var(--ink);
+    letter-spacing: 1px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .note-check {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    font-size: 22px;
+    padding: 0;
+    line-height: 1;
+    border: none;
+    font-family: "Long Cang", cursive;
+    position: relative;
+  }
+  .note-check::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--ink);
+    border-radius: 50% 48% 52% 50% / 50% 52% 48% 50%;
+    filter: url(#wobble);
+  }
+  .note-check:active { transform: scale(0.85); }
+  .notes-stage {
+    text-align: center;
+    padding: 4px 8px 8px;
+  }
+
   /* ==================== 抽签页 ==================== */
   .lottery-stage {
     text-align: center;
@@ -443,6 +666,121 @@
   .lottery-actions {
     display: flex; flex-direction: column; gap: 12px;
     margin-top: 8px;
+  }
+
+  /* ==================== 工具页：年计划提醒 ==================== */
+  .goals-card { padding: 14px 14px 12px; margin-bottom: 12px; }
+  .tools-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 1.5px;
+    text-align: center;
+    margin: 4px 0 12px;
+  }
+  .goal-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .goal-form .input-wrap { padding: 2px 12px; }
+  .goal-form .input-wrap input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 17px;
+    color: var(--ink);
+    padding: 8px 0;
+  }
+  .goal-freq-row, .goal-date-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+  .goal-select, .goal-num-input, .goal-date-input {
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 6px 10px;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+  }
+  .goal-num-input {
+    width: 56px;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+  .goal-num-input::-webkit-outer-spin-button,
+  .goal-num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .goal-date-input {
+    min-width: 130px;
+    font-size: 15px;
+  }
+  .goal-quick-btn {
+    background: transparent;
+    border: 1.5px dashed var(--ink-soft);
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 4px 10px;
+    border-radius: 8px 12px 10px 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .goal-quick-btn:active {
+    color: var(--ink);
+    border-color: var(--ink);
+    transform: scale(0.95);
+  }
+  .goal-add-btn {
+    align-self: center;
+    padding: 10px 22px;
+    font-size: 17px;
+    letter-spacing: 3px;
+    margin-top: 4px;
+  }
+
+  .goal-list { list-style: none; padding: 0; margin: 8px 0 0; }
+  .goal-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 4px;
+    border-top: 1px dashed rgba(90,90,90,0.3);
+    font-size: 15px;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+  }
+  .goal-item:first-child { border-top: none; }
+  .goal-item .goal-body { flex: 1; line-height: 1.5; }
+  .goal-item .goal-text { font-weight: 600; }
+  .goal-item .goal-meta { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .goal-item .goal-del {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 20px;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .goal-item .goal-del:hover { color: #B5443A; }
+  .goal-empty {
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink-soft);
+    padding: 12px 4px;
+    font-style: italic;
   }
 
   /* ==================== 工具页：随机数字 ==================== */
@@ -812,11 +1150,56 @@
 
   <!-- ===== 今日 ===== -->
   <section class="screen active" id="screen-today">
+    <!-- 悬浮小工具：随机数字（点击弹出 modal） -->
+    <button class="today-tool-btn sk" id="openRandomBtn" aria-label="随机数字">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="3"/>
+        <circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+
+    <!-- 「值得写下来」小贴士（可折叠） -->
+    <div class="tips-card sk" id="tipsCard">
+      <button class="tips-header" id="tipsToggle" aria-expanded="true">
+        <span class="tips-title">💡 什么值得写下来？</span>
+        <svg class="tips-chevron" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 5 8 L 10 13 L 15 8"/>
+        </svg>
+      </button>
+      <div class="tips-body">
+        <div class="tips-group">
+          <div class="tips-label"><span class="tips-dot dot-red"></span>红 · 特别值得记</div>
+          <ul class="tips-list">
+            <li>跟<b>年计划</b>有关的</li>
+            <li><b>工作</b>相关</li>
+            <li><b>紧急琐事</b>（用完要买、坏了要修、马上处理）</li>
+          </ul>
+        </div>
+        <div class="tips-group">
+          <div class="tips-label"><span class="tips-dot dot-yellow"></span>黄 · 值得记</div>
+          <p class="tips-p"><b>生活环境</b>相关：打扫、整理（偶尔漏一次也没事）</p>
+        </div>
+        <div class="tips-group">
+          <div class="tips-label"><span class="tips-dot dot-green"></span>绿 · 想到就记</div>
+          <p class="tips-p"><b>特别爱做</b>的事——不需要动力就会去做的那些</p>
+        </div>
+        <div class="tips-group">
+          <div class="tips-label"><span class="tips-dot dot-white"></span>白 · 想想再记</div>
+          <p class="tips-p">临时的小念头、个人成长感悟——问问自己：<b>真的今天要做吗？</b><br><span class="tips-note">已经要做的事已经很多了，不用给自己太大负担 ☺</span></p>
+        </div>
+      </div>
+    </div>
+
     <div class="card sk">
       <div class="add-row">
         <div class="input-wrap sk">
           <input id="newTaskInput" type="text" placeholder="写下今天想做的事…" maxlength="200" />
         </div>
+        <button class="task-priority priority-white" id="newTaskPriority" title="点击切换优先级" aria-label="新任务优先级"></button>
         <button class="btn btn-fill sk sk-solid" id="addTaskBtn">+ 添加</button>
       </div>
     </div>
@@ -860,28 +1243,70 @@
     </div>
   </section>
 
+  <!-- ===== 随记 ===== -->
+  <section class="screen" id="screen-notes">
+    <div class="card sk">
+      <div class="add-row">
+        <div class="input-wrap sk">
+          <input id="newNoteInput" type="text" placeholder="随手记一下…" maxlength="200" />
+        </div>
+        <button class="btn btn-fill sk sk-solid" id="addNoteBtn" aria-label="添加">+ 添加</button>
+      </div>
+    </div>
+
+    <div class="card sk">
+      <ul class="note-list" id="noteList"></ul>
+      <div class="empty-state" id="noteEmpty" style="display:none;">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round" filter="url(#wobble)">
+          <path d="M 18 12 L 42 12 L 42 40 L 32 50 L 18 50 Z"/>
+          <path d="M 32 50 L 32 40 L 42 40"/>
+          <line x1="24" y1="22" x2="36" y2="22"/>
+          <line x1="24" y1="30" x2="36" y2="30"/>
+        </svg>
+        还没有随手记，写一条试试～
+      </div>
+    </div>
+
+    <!-- 随手抽一条 -->
+    <div class="notes-stage">
+      <div class="lottery-display sk" id="notePickDisplay">
+        <div class="small">~ 随 手 一 记 ~</div>
+        <div class="task-pick" id="notePickText">摇一条来看看~</div>
+      </div>
+      <div class="lottery-actions">
+        <button class="btn btn-fill sk sk-solid btn-primary large" id="pickNoteBtn">随 手 抽 一 条</button>
+        <button class="btn btn-jade" id="noteDoneBtn" style="display:none;">✓ 这件事解决啦</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== 工具 ===== -->
   <section class="screen" id="screen-tools">
-    <div class="tools-stage">
-      <p class="tools-hint">设个范围 · 让数字替你决定</p>
+    <!-- 年计划提醒 -->
+    <div class="card sk goals-card">
+      <div class="tools-section-title">📅 年计划提醒</div>
 
-      <div class="random-range">
-        <div class="range-input-wrap sk">
-          <input id="rangeMin" type="number" value="1" inputmode="numeric" />
+      <div class="goal-form">
+        <div class="input-wrap sk">
+          <input id="goalText" type="text" placeholder="想做的事(如: 运动 每周 2 次)" maxlength="100" />
         </div>
-        <span class="range-sep">到</span>
-        <div class="range-input-wrap sk">
-          <input id="rangeMax" type="number" value="20" inputmode="numeric" />
+        <div class="goal-date-row">
+          <span class="goal-date-lbl">从</span>
+          <input id="goalStart" type="date" class="goal-date-input" />
+          <button type="button" class="goal-quick-btn" data-quick="today">今天</button>
         </div>
+        <div class="goal-date-row">
+          <span class="goal-date-lbl">到</span>
+          <input id="goalEnd" type="date" class="goal-date-input" />
+          <button type="button" class="goal-quick-btn" data-quick="year-end">年底</button>
+        </div>
+        <button class="btn btn-fill sk sk-solid goal-add-btn" id="addGoalBtn">+ 添加</button>
       </div>
 
-      <div class="random-display sk" id="randomDisplay">
-        <div class="small">~ 抽 中 数 字 ~</div>
-        <div class="random-number" id="randomNumber">?</div>
-      </div>
-
-      <button class="btn btn-fill sk sk-solid btn-primary large" id="genNumberBtn">生 成 数 字</button>
+      <ul class="goal-list" id="goalList"></ul>
+      <div class="goal-empty" id="goalEmpty" style="display:none;">还没有年计划提醒 · 记一条给自己看看</div>
     </div>
+
   </section>
 
 </div>
@@ -912,13 +1337,30 @@
     </span>
     <span>抽签</span>
   </button>
+  <button data-tab="notes">
+    <span class="ico">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 6 5 L 21 5 L 21 18 L 16 23 L 6 23 Z"/>
+        <path d="M 16 23 L 16 18 L 21 18"/>
+        <line x1="10" y1="11" x2="17" y2="11"/>
+        <line x1="10" y1="15" x2="17" y2="15"/>
+      </svg>
+    </span>
+    <span>随记</span>
+  </button>
   <button data-tab="tools">
     <span class="ico">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M 14,4 L 16,12 L 24,14 L 16,16 L 14,24 L 12,16 L 4,14 L 12,12 Z"/>
+        <rect x="5" y="7" width="18" height="16" rx="2"/>
+        <line x1="5" y1="12" x2="23" y2="12"/>
+        <line x1="10" y1="7" x2="10" y2="4"/>
+        <line x1="18" y1="7" x2="18" y2="4"/>
+        <circle cx="10" cy="17" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="14" cy="17" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="18" cy="17" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </span>
-    <span>工具</span>
+    <span>年计划</span>
   </button>
 </nav>
 
@@ -934,6 +1376,34 @@
   </div>
 </div>
 
+<!-- 随机数字弹窗（从今日页的小工具按钮打开） -->
+<div class="modal-bg" id="randomModal">
+  <div class="modal sk">
+    <h2>随机数字</h2>
+    <p class="modal-sub">设个范围 · 让数字替你决定</p>
+
+    <div class="random-range">
+      <div class="range-input-wrap sk">
+        <input id="rangeMin" type="number" value="1" inputmode="numeric" />
+      </div>
+      <span class="range-sep">到</span>
+      <div class="range-input-wrap sk">
+        <input id="rangeMax" type="number" value="20" inputmode="numeric" />
+      </div>
+    </div>
+
+    <div class="random-display sk" id="randomDisplay">
+      <div class="small">~ 抽 中 数 字 ~</div>
+      <div class="random-number" id="randomNumber">?</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn sk" id="closeRandomBtn">关闭</button>
+      <button class="btn sk btn-confirm-ok" id="genNumberBtn">生 成</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -941,7 +1411,22 @@
    每日抽签待办（手绘速写本风格）
    ========================================================= */
 const STORAGE_KEY   = "dlt_days";      // 当前工作中的今日清单
+const NOTES_KEY     = "dlt_notes";     // 随手记：[{id, text}]
+const GOALS_KEY     = "dlt_goals";     // 年计划提醒：[{id, text, freq, period, endDate}]
 const WEEKDAYS = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+
+/* 优先级顺序：白 < 绿 < 黄 < 红。点小圆点会循环。 */
+const PRIORITY_ORDER   = ["white", "green", "yellow", "red"];
+/* 加权随机：红 5 · 黄 3 · 绿 2 · 白 1  → 红是白的 5 倍，但白依然有 1/11≈9% 概率 */
+const PRIORITY_WEIGHTS = { white: 1, green: 2, yellow: 3, red: 5, orange: 3 /* 老数据 orange→按黄处理 */ };
+/* 数量软上限：红无限，黄/绿 5，白 3。超过只提醒不阻止 */
+const PRIORITY_LIMITS  = { yellow: 5, green: 5, white: 3 };
+const PRIORITY_LABELS  = { white: "白色", green: "绿色", yellow: "黄色", red: "红色" };
+/* 把老的 orange 数据可视化为黄 */
+const PRIORITY_ALIASES = { orange: "yellow" };
+function normalizePriority(p) {
+  return PRIORITY_ALIASES[p] || p || "white";
+}
 
 function todayStr() {
   const d = new Date();
@@ -962,6 +1447,25 @@ function getTasks(date) { return loadAll()[date] || []; }
 function setTasks(date, tasks) {
   const all = loadAll(); all[date] = tasks; saveAll(all);
 }
+
+/* ---------- 随手记：独立存储，无 done 概念（完成即删除） ---------- */
+function loadNotes() {
+  try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveNotes(notes) {
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
+
+/* ---------- 年计划提醒（工具页） ---------- */
+function loadGoals() {
+  try { return JSON.parse(localStorage.getItem(GOALS_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveGoals(goals) {
+  localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+}
+
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
@@ -1005,6 +1509,62 @@ async function clearTodayTasks() {
   setTasks(today, []);
   renderToday();
   toast("今日已清空 ✓");
+}
+
+/* ---------- 工具页：年计划提醒 ---------- */
+function renderGoals() {
+  const list  = document.getElementById("goalList");
+  const empty = document.getElementById("goalEmpty");
+  const goals = loadGoals();
+  list.innerHTML = "";
+  if (goals.length === 0) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  goals.forEach(g => {
+    const li = document.createElement("li");
+    li.className = "goal-item";
+    li.dataset.id = g.id;
+    // 显示日期范围（两端都可以为空）
+    let range = "";
+    if (g.startDate && g.endDate)      range = `${g.startDate} → ${g.endDate}`;
+    else if (g.startDate)              range = `从 ${g.startDate} 起`;
+    else if (g.endDate)                range = `到 ${g.endDate}`;
+    li.innerHTML = `
+      <div class="goal-body">
+        <div class="goal-text">${escapeHtml(g.text)}</div>
+        ${range ? `<div class="goal-meta">${range}</div>` : ""}
+      </div>
+      <button class="goal-del" data-goal-action="delete" aria-label="删除">×</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function addGoal() {
+  const textEl  = document.getElementById("goalText");
+  const startEl = document.getElementById("goalStart");
+  const endEl   = document.getElementById("goalEnd");
+  const text = textEl.value.trim();
+  if (!text) { toast("先写下想做的事~"); return; }
+  if (startEl.value && endEl.value && startEl.value > endEl.value) {
+    toast("起始日期不能晚于结束日期~"); return;
+  }
+  const goals = loadGoals();
+  goals.push({
+    id: uid(),
+    text,
+    startDate: startEl.value || "",
+    endDate:   endEl.value   || ""
+  });
+  saveGoals(goals);
+  textEl.value = "";
+  renderGoals();
+  toast("已加入年计划提醒 ✓");
+}
+
+function deleteGoal(id) {
+  const goals = loadGoals().filter(g => g.id !== id);
+  saveGoals(goals);
+  renderGoals();
 }
 
 /* ---------- 工具页：随机数字 ---------- */
@@ -1097,8 +1657,10 @@ function renderToday() {
     const li = document.createElement("li");
     li.className = "task-item" + (task.done ? " done" : "");
     li.dataset.id = task.id;
+    const priority = normalizePriority(task.priority);
     li.innerHTML = `
       <div class="task-num">${idx + 1}.</div>
+      <button class="task-priority priority-${priority}" data-action="priority" title="点击切换优先级" aria-label="优先级"></button>
       <div class="task-text sk" data-id="${task.id}" data-action="edit" title="点击修改，清空文字即可删除">${escapeHtml(task.text)}</div>
       <button class="task-check" data-action="toggle" aria-label="完成">✓</button>
     `;
@@ -1106,15 +1668,51 @@ function renderToday() {
   });
 }
 
+/* 新任务的默认优先级（输入框旁边的小色点在控制） */
+let newTaskPriority = "white";
+
+function cycleNewTaskPriority() {
+  const idx = PRIORITY_ORDER.indexOf(newTaskPriority);
+  newTaskPriority = PRIORITY_ORDER[(idx + 1) % PRIORITY_ORDER.length];
+  const btn = document.getElementById("newTaskPriority");
+  btn.className = "task-priority priority-" + newTaskPriority;
+}
+
 function addTask() {
   const input = document.getElementById("newTaskInput");
   const text = input.value.trim();
   if (!text) return;
   const tasks = getTasks(currentDate);
-  tasks.push({ id: uid(), text, done: false });
+  tasks.push({ id: uid(), text, done: false, priority: newTaskPriority });
   setTasks(currentDate, tasks);
   input.value = "";
   renderToday();
+  checkPriorityLimit(newTaskPriority);
+}
+
+/* 数量软提醒：某个颜色的未完成任务超过软上限就 toast 一下（不阻止添加） */
+function checkPriorityLimit(priority) {
+  const p = normalizePriority(priority);
+  const limit = PRIORITY_LIMITS[p];
+  if (!limit) return; // 红色无限
+  const count = getTasks(currentDate).filter(t =>
+    !t.done && normalizePriority(t.priority) === p
+  ).length;
+  if (count > limit) {
+    toast(`${PRIORITY_LABELS[p]}已有 ${count} 件，尽量控制在 ${limit} 件哦~`);
+  }
+}
+
+function cyclePriority(id) {
+  const tasks = getTasks(currentDate);
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  const cur = normalizePriority(t.priority);
+  const nextIdx = (PRIORITY_ORDER.indexOf(cur) + 1) % PRIORITY_ORDER.length;
+  t.priority = PRIORITY_ORDER[nextIdx];
+  setTasks(currentDate, tasks);
+  renderToday();
+  checkPriorityLimit(t.priority);
 }
 function toggleTask(id) {
   const tasks = getTasks(currentDate);
@@ -1160,6 +1758,17 @@ function startEdit(id) {
 }
 
 let lotteryPicked = null;
+/* ---------- 加权随机（红 5 · 黄 3 · 绿 2 · 白 1） ---------- */
+function weightedPick(items) {
+  const pool = [];
+  items.forEach(it => {
+    const p = normalizePriority(it.priority);
+    const w = PRIORITY_WEIGHTS[p] || 1;
+    for (let i = 0; i < w; i++) pool.push(it);
+  });
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function pickRandomTask() {
   const tasks = getTasks(currentDate);
   const unfinished = tasks.filter(t => !t.done);
@@ -1176,13 +1785,13 @@ function pickRandomTask() {
   doneBtn.style.display = "none";
   let spins = 0; const total = 10;
   const interval = setInterval(() => {
-    const r = unfinished[Math.floor(Math.random() * unfinished.length)];
+    const r = weightedPick(unfinished);
     text.textContent = r.text;
     spins++;
     if (spins >= total) {
       clearInterval(interval);
       display.classList.remove("spinning");
-      const final = unfinished[Math.floor(Math.random() * unfinished.length)];
+      const final = weightedPick(unfinished);
       text.textContent = final.text;
       lotteryPicked = final.id;
       doneBtn.style.display = "block";
@@ -1203,6 +1812,89 @@ function markPickedDone() {
   }
 }
 
+/* ==================== 随手记 ==================== */
+let notePicked = null;
+
+function renderNotes() {
+  const list = document.getElementById("noteList");
+  const empty = document.getElementById("noteEmpty");
+  const notes = loadNotes();
+  list.innerHTML = "";
+  if (notes.length === 0) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  notes.forEach((note, idx) => {
+    const li = document.createElement("li");
+    li.className = "note-item";
+    li.dataset.id = note.id;
+    li.innerHTML = `
+      <div class="note-num">${idx + 1}.</div>
+      <div class="note-text">${escapeHtml(note.text)}</div>
+      <button class="note-check" data-note-action="complete" aria-label="完成">✓</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function addNote() {
+  const input = document.getElementById("newNoteInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const notes = loadNotes();
+  notes.push({ id: uid(), text });
+  saveNotes(notes);
+  input.value = "";
+  renderNotes();
+}
+
+function completeNote(id) {
+  const notes = loadNotes().filter(n => n.id !== id);
+  saveNotes(notes);
+  renderNotes();
+}
+
+function pickRandomNote() {
+  const notes = loadNotes();
+  const display = document.getElementById("notePickDisplay");
+  const text = document.getElementById("notePickText");
+  const doneBtn = document.getElementById("noteDoneBtn");
+  if (notes.length === 0) {
+    text.textContent = "还没有随手记~";
+    notePicked = null;
+    doneBtn.style.display = "none";
+    return;
+  }
+  display.classList.add("spinning");
+  doneBtn.style.display = "none";
+  let spins = 0; const total = 10;
+  const interval = setInterval(() => {
+    const r = notes[Math.floor(Math.random() * notes.length)];
+    text.textContent = r.text;
+    spins++;
+    if (spins >= total) {
+      clearInterval(interval);
+      display.classList.remove("spinning");
+      const final = notes[Math.floor(Math.random() * notes.length)];
+      text.textContent = final.text;
+      notePicked = final.id;
+      doneBtn.style.display = "block";
+    }
+  }, 80);
+}
+
+function markPickedNoteDone() {
+  if (!notePicked) return;
+  completeNote(notePicked);
+  toast("解决啦~");
+  const remaining = loadNotes();
+  notePicked = null;
+  document.getElementById("noteDoneBtn").style.display = "none";
+  if (remaining.length > 0) {
+    setTimeout(pickRandomNote, 400);
+  } else {
+    document.getElementById("notePickText").textContent = "所有随手记都清空啦~";
+  }
+}
+
 
 function updateHeaderDate() {
   document.getElementById("todayDate").textContent = prettyDate(currentDate);
@@ -1210,7 +1902,8 @@ function updateHeaderDate() {
 const PAGE_TITLES = {
   today:   { zh: "今日清单", en: "Today's List" },
   lottery: { zh: "今日抽签", en: "Today's Lottery" },
-  tools:   { zh: "工具",     en: "Tools" },
+  notes:   { zh: "随手记",   en: "Quick Notes" },
+  tools:   { zh: "年计划提醒", en: "Yearly Plan" },
 };
 function switchTab(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -1225,6 +1918,8 @@ function switchTab(name) {
     document.getElementById("pageTitleEn").textContent = t.en;
   }
   if (name === "today") renderToday();
+  if (name === "notes") renderNotes();
+  if (name === "tools") renderGoals();
 }
 
 /* ---------- 示例数据 ---------- */
@@ -1248,6 +1943,21 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("newTaskInput").addEventListener("keydown", e => {
     if (e.key === "Enter") addTask();
   });
+  document.getElementById("newTaskPriority").addEventListener("click", cycleNewTaskPriority);
+
+  // 「值得写下来」小贴士栏 —— 折叠/展开 + 记忆状态
+  const tipsCard = document.getElementById("tipsCard");
+  const tipsToggle = document.getElementById("tipsToggle");
+  const TIPS_KEY = "dlt_tips_collapsed";
+  if (localStorage.getItem(TIPS_KEY) === "1") {
+    tipsCard.classList.add("collapsed");
+    tipsToggle.setAttribute("aria-expanded", "false");
+  }
+  tipsToggle.addEventListener("click", () => {
+    const collapsed = tipsCard.classList.toggle("collapsed");
+    tipsToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    localStorage.setItem(TIPS_KEY, collapsed ? "1" : "0");
+  });
 
   // iOS PWA：点包装层时强制聚焦内部 input（修一个偶发的"键盘不弹出"bug）
   document.querySelectorAll(".input-wrap, .range-input-wrap").forEach(wrap => {
@@ -1268,15 +1978,70 @@ document.addEventListener("DOMContentLoaded", () => {
     if (action === "toggle") toggleTask(id);
     else if (action === "edit") startEdit(id);
     else if (action === "delete") deleteTask(id);
+    else if (action === "priority") cyclePriority(id);
   });
   document.getElementById("pickBtn").addEventListener("click", pickRandomTask);
   document.getElementById("doneBtn").addEventListener("click", markPickedDone);
 
+  // 随记：添加 / 完成 / 抽一条
+  document.getElementById("addNoteBtn").addEventListener("click", addNote);
+  document.getElementById("newNoteInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") addNote();
+  });
+  document.getElementById("noteList").addEventListener("click", e => {
+    const btn = e.target.closest("[data-note-action]");
+    if (!btn) return;
+    const li = e.target.closest(".note-item");
+    if (!li) return;
+    if (btn.dataset.noteAction === "complete") completeNote(li.dataset.id);
+  });
+  document.getElementById("pickNoteBtn").addEventListener("click", pickRandomNote);
+  document.getElementById("noteDoneBtn").addEventListener("click", markPickedNoteDone);
+
   // 今日：清空清单
   document.getElementById("clearTodayBtn").addEventListener("click", clearTodayTasks);
 
-  // 工具页：随机数字生成
+  // 随机数字 modal：从今日页的悬浮小按钮打开
+  const randomModal = document.getElementById("randomModal");
+  document.getElementById("openRandomBtn").addEventListener("click", () => {
+    randomModal.classList.add("active");
+  });
+  document.getElementById("closeRandomBtn").addEventListener("click", () => {
+    randomModal.classList.remove("active");
+  });
+  randomModal.addEventListener("click", e => {
+    if (e.target === randomModal) randomModal.classList.remove("active"); // 点背景关闭
+  });
   document.getElementById("genNumberBtn").addEventListener("click", generateRandomNumber);
+
+  // 工具页：年计划提醒 —— 默认日期 + 今天/年底 快捷按钮
+  const yearEndStr = () => `${new Date().getFullYear()}-12-31`;
+  const goalStartInput = document.getElementById("goalStart");
+  const goalEndInput   = document.getElementById("goalEnd");
+  if (goalStartInput && !goalStartInput.value) goalStartInput.value = todayStr();   // 起始默认今天
+  if (goalEndInput   && !goalEndInput.value)   goalEndInput.value   = yearEndStr(); // 结束默认年底
+  // 快捷按钮
+  document.querySelectorAll(".goal-quick-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const dateRow = btn.closest(".goal-date-row");
+      const input = dateRow && dateRow.querySelector("input[type=date]");
+      if (!input) return;
+      input.value = btn.dataset.quick === "year-end" ? yearEndStr() : todayStr();
+    });
+  });
+  document.getElementById("addGoalBtn").addEventListener("click", addGoal);
+  document.getElementById("goalText").addEventListener("keydown", e => {
+    if (e.key === "Enter") addGoal();
+  });
+  document.getElementById("goalList").addEventListener("click", e => {
+    const btn = e.target.closest("[data-goal-action]");
+    if (!btn) return;
+    const li = e.target.closest(".goal-item");
+    if (!li) return;
+    if (btn.dataset.goalAction === "delete") deleteGoal(li.dataset.id);
+  });
+  // 首次载入时也渲染一次（万一初始 tab 就是 tools）
+  renderGoals();
 
   document.querySelectorAll("nav.tabs button").forEach(b => {
     b.addEventListener("click", () => switchTab(b.dataset.tab));
